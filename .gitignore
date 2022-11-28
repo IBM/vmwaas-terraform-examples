@@ -38,6 +38,10 @@ override.tf.json
 
 .DS_Store
 
+# Ignore test files
 
+*.tf-test
+*.tf-not
+*.tf-NOT
 
 
