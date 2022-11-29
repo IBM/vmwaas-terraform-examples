@@ -43,6 +43,17 @@ locals {
 }
 
 
+locals {
+  public_ips = { for k,v in var.public_ips : v.name => {
+    ip_address = cidrhost("${local.edge_gateway_gateway}/${local.edge_gateway_prefix_length}", k+2)
+    description= v.description
+    } 
+  }
+}
+
+
+
+
 ################################################################################
 # This code block creates virtual data center network resources
 ################################################################################
@@ -59,7 +70,8 @@ locals {
 resource "vcd_network_routed_v2" "routed_network" {
   for_each = local.vdc_networks_routed
 
-  name            = each.key
+  #name            = each.key item_name_prefix
+  name            = var.item_name_prefix == "" ? each.key : "${var.item_name_prefix}-${each.key}"
   description     = each.value.description
 
   edge_gateway_id = local.edge_gateway_id
@@ -80,7 +92,8 @@ resource "vcd_network_isolated_v2" "isolated_network" {
   for_each = local.vdc_networks_isolated
 
 
-  name            = each.key
+  #name            = each.key
+  name            = var.item_name_prefix == "" ? each.key : "${var.item_name_prefix}-${each.key}"
   description     = each.value.description
 
   gateway         = each.value.subnet.gateway
@@ -154,7 +167,9 @@ locals {
 resource "vcd_independent_disk" "virtual_machines_disk" {
   for_each               = local.virtual_machines_disks_map
 
-  name                   = each.key
+  #name                   = each.key
+  name                   = var.item_name_prefix == "" ? each.key : "${var.item_name_prefix}-${each.key}"
+
   size_in_mb             = each.value.disk.size_in_mb
   bus_type               = each.value.disk.bus_type
   bus_sub_type           = each.value.disk.bus_sub_type
@@ -204,7 +219,9 @@ resource "random_string" "admin_password" {
 resource "vcd_vm" "virtual_machines" {
   for_each               = var.virtual_machines
 
-  name                   = each.key
+  #name                   = each.key
+  name                   = var.item_name_prefix == "" ? each.key : "${var.item_name_prefix}-${each.key}"
+
 
   catalog_name           = each.value.image.catalog_name
   template_name          = each.value.image.template_name
@@ -292,14 +309,19 @@ resource "vcd_nsxt_nat_rule" "snat_rules" {
   org                      = var.vmwaas_org
   edge_gateway_id          = local.edge_gateway_id
   
-  name                     = each.key
+  #name                     = each.key
+  name                     = var.item_name_prefix == "" ? each.key : "${var.item_name_prefix}-${each.key}"
+
   rule_type                = each.value.rule_type
   description              = each.value.description
 
   firewall_match           = "MATCH_INTERNAL_ADDRESS"
 
-  external_address         = each.value.external_address != "" ? each.value.external_address : cidrhost("${local.edge_gateway_gateway}/${local.edge_gateway_prefix_length}", each.value.external_address_list_index+2)
-  internal_address         = each.value.internal_address != "" ? each.value.internal_address : cidrhost("${vcd_network_routed_v2.routed_network[each.value.internal_address_target].gateway}/${vcd_network_routed_v2.routed_network[each.value.internal_address_target].prefix_length}", 0)
+  #external_address         = each.value.external_address != "" ? each.value.external_address : cidrhost("${local.edge_gateway_gateway}/${local.edge_gateway_prefix_length}", each.value.external_address_list_index+2)
+  external_address         = each.value.external_address != "" ? each.value.external_address : local.public_ips[each.value.external_address_target].ip_address
+  #internal_address         = each.value.internal_address != "" ? each.value.internal_address : cidrhost("${vcd_network_routed_v2.routed_network[each.value.internal_address_target].gateway}/${vcd_network_routed_v2.routed_network[each.value.internal_address_target].prefix_length}", 0)
+  internal_address         = each.value.internal_address != "" ? each.value.internal_address : "${cidrhost("${vcd_network_routed_v2.routed_network[each.value.internal_address_target].gateway}/${vcd_network_routed_v2.routed_network[each.value.internal_address_target].prefix_length}", 0)}/${vcd_network_routed_v2.routed_network[each.value.internal_address_target].prefix_length}"
+
   snat_destination_address = each.value.snat_destination_address
 
   logging                  = each.value.logging
@@ -313,13 +335,16 @@ resource "vcd_nsxt_nat_rule" "dnat_rules" {
   org                      = var.vmwaas_org
   edge_gateway_id          = local.edge_gateway_id
   
-  name                     = each.key
+  #name                     = each.key
+  name                     = var.item_name_prefix == "" ? each.key : "${var.item_name_prefix}-${each.key}"
+
   rule_type                = each.value.rule_type
   description              = each.value.description
 
   firewall_match           = "MATCH_EXTERNAL_ADDRESS"
 
-  external_address         = cidrhost("${local.edge_gateway_gateway}/${local.edge_gateway_prefix_length}", each.value.external_address_list_index+2)
+  #external_address         = cidrhost("${local.edge_gateway_gateway}/${local.edge_gateway_prefix_length}", each.value.external_address_list_index+2)
+  external_address         = each.value.external_address != "" ? each.value.external_address : local.public_ips[each.value.external_address_target].ip_address
   internal_address         = each.value.internal_address != "" ? each.value.internal_address : [for k, v in vcd_vm.virtual_machines[each.value.internal_address_target].network : v.ip if v.is_primary == true ][0]
 
   dnat_external_port       = each.value.dnat_external_port
@@ -336,17 +361,39 @@ resource "vcd_nsxt_nat_rule" "no_snat_rules" {
   org                      = var.vmwaas_org
   edge_gateway_id          = local.edge_gateway_id
   
-  name                     = each.key
+  #name                     = each.key
+  name                     = var.item_name_prefix == "" ? each.key : "${var.item_name_prefix}-${each.key}"
+
   rule_type                = each.value.rule_type
   description              = each.value.description
 
   firewall_match           = "MATCH_INTERNAL_ADDRESS"
 
-  internal_address         = each.value.internal_address != "" ? each.value.internal_address : cidrhost("${vcd_network_routed_v2.routed_network[each.value.internal_address_target].gateway}/${vcd_network_routed_v2.routed_network[each.value.internal_address_target].prefix_length}", 0)
+  #internal_address         = each.value.internal_address != "" ? each.value.internal_address : cidrhost("${vcd_network_routed_v2.routed_network[each.value.internal_address_target].gateway}/${vcd_network_routed_v2.routed_network[each.value.internal_address_target].prefix_length}", 0)
+  internal_address         = each.value.internal_address != "" ? each.value.internal_address : "${cidrhost("${vcd_network_routed_v2.routed_network[each.value.internal_address_target].gateway}/${vcd_network_routed_v2.routed_network[each.value.internal_address_target].prefix_length}", 0)}/${vcd_network_routed_v2.routed_network[each.value.internal_address_target].prefix_length}"
   snat_destination_address = each.value.snat_destination_address
 
   logging                  = each.value.logging
 }
+
+### test starts - make the above to support both routed network as well as virtual machines as internal_address keys
+/*
+locals {
+  #test_key = "sami-demo-application-network-1"
+  test_key = "app-server-1"
+
+  test = element(concat(
+          [for k,v in vcd_network_routed_v2.routed_network : "${vcd_network_routed_v2.routed_network[k].gateway}" if k == local.test_key],
+          [for k,v in vcd_vm.virtual_machines : v.network[0].ip if k == local.test_key]
+          ),0)
+}
+*/
+### test ends
+
+
+
+
+
 
 # Note. Use this for NO_DNAT rules. 
 
@@ -356,13 +403,16 @@ resource "vcd_nsxt_nat_rule" "no_dnat_rules" {
   org                      = var.vmwaas_org
   edge_gateway_id          = local.edge_gateway_id
   
-  name                     = each.key
+  #name                     = each.key
+  name                     = var.item_name_prefix == "" ? each.key : "${var.item_name_prefix}-${each.key}"
+
   rule_type                = each.value.rule_type
   description              = each.value.description
 
   firewall_match           = "MATCH_EXTERNAL_ADDRESS"
 
-  external_address         = cidrhost("${local.edge_gateway_gateway}/${local.edge_gateway_prefix_length}", each.value.external_address_list_index+2)
+  #external_address         = cidrhost("${local.edge_gateway_gateway}/${local.edge_gateway_prefix_length}", each.value.external_address_list_index+2)
+  external_address         = each.value.external_address != "" ? each.value.external_address : local.public_ips[each.value.external_address_target].ip_address
 
   dnat_external_port       = each.value.dnat_external_port
 
@@ -374,10 +424,50 @@ resource "vcd_nsxt_nat_rule" "no_dnat_rules" {
 # This code block creates an output structure.
 
 locals {
+  created_snat_rules = { for k,v in vcd_nsxt_nat_rule.snat_rules : k => {
+    rule_type = v.rule_type
+    name = v.name
+    external_address = v.external_address
+    internal_address = v.internal_address
+    snat_destination_address = v.snat_destination_address
+    dnat_external_port = v.dnat_external_port
+    }  
+  }
+  created_dnat_rules = { for k,v in vcd_nsxt_nat_rule.dnat_rules : k => {
+    rule_type = v.rule_type
+    name = v.name
+    external_address = v.external_address
+    internal_address = v.internal_address
+    snat_destination_address = v.snat_destination_address
+    dnat_external_port = v.dnat_external_port
+    }  
+  }
+  created_no_snat_rules = { for k,v in vcd_nsxt_nat_rule.no_snat_rules : k => {
+    rule_type = v.rule_type
+    name = v.name
+    external_address = v.external_address
+    internal_address = v.internal_address
+    snat_destination_address = v.snat_destination_address
+    dnat_external_port = v.dnat_external_port
+    }  
+  }
+  created_no_dnat_rules = { for k,v in vcd_nsxt_nat_rule.no_dnat_rules : k => {
+    rule_type = v.rule_type
+    name = v.name
+    external_address = v.external_address
+    internal_address = v.internal_address
+    snat_destination_address = v.snat_destination_address
+    dnat_external_port = v.dnat_external_port
+    }  
+  }
 
-
-#  nat_rules = 
+  created_nat_rules = merge(
+    local.created_snat_rules,
+    local.created_dnat_rules,
+    local.created_no_snat_rules,
+    local.created_no_dnat_rules,) 
 }
+
 
 
 ################################################################################
@@ -406,7 +496,9 @@ resource "vcd_nsxt_security_group" "security_group" {
   org                      = var.vmwaas_org
   edge_gateway_id          = local.edge_gateway_id
   
-  name                     = each.key
+  #name                     = each.key
+  name                     = var.item_name_prefix == "" ? each.key : "${var.item_name_prefix}-${each.key}"
+
   description              = "Security Group for ${each.value.description}"
   member_org_network_ids   = each.value.member_org_network_ids
 }
@@ -424,7 +516,8 @@ resource "vcd_nsxt_security_group" "security_group" {
 
 locals {
   public_ip_set = { for k,v in var.nat_rules : k => {
-    ip_addresses = [ cidrhost("${local.edge_gateway_gateway}/${local.edge_gateway_prefix_length}", v.external_address_list_index+2) ]
+    #ip_addresses = [ cidrhost("${local.edge_gateway_gateway}/${local.edge_gateway_prefix_length}", v.external_address_list_index+2) ]
+    ip_addresses = [ v.external_address != "" ? v.external_address : local.public_ips[v.external_address_target].ip_address ]
     description = "Public IP of ${v.description}"
     } if v.rule_type == "SNAT" || v.rule_type == "DNAT"
   }
@@ -443,7 +536,9 @@ resource "vcd_nsxt_ip_set" "ip_set" {
   org                      = var.vmwaas_org
   edge_gateway_id          = local.edge_gateway_id
 
-  name                     = each.key
+  #name                     = each.key
+  name                     = var.item_name_prefix == "" ? each.key : "${var.item_name_prefix}-${each.key}"
+
   description              = each.value.description
 
   ip_addresses             = each.value.ip_addresses
@@ -499,7 +594,10 @@ resource "vcd_nsxt_firewall" "firewall" {
     for_each = var.firewall_rules
     content {
       action               = rule.value.action
-      name                 = rule.key
+ 
+      #name                 = rule.key
+      name                 = var.item_name_prefix == "" ? rule.key : "${var.item_name_prefix}-${rule.key}"
+
       direction            = rule.value.direction
       ip_protocol          = rule.value.ip_protocol
       source_ids           = concat(

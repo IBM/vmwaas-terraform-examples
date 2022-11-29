@@ -48,6 +48,13 @@ variable "vmwaas_allow_unverified_ssl" {
   default = true
 }
 
+# Note. Use a common name prefix for each item. 
+
+variable "item_name_prefix" {
+  description = "Add a prefix for instance names."
+  default = ""
+}
+
 
 # Note. Create random password with terraform. If you select no, 
 # Director will generate one for each Virtual Machine. 
@@ -240,13 +247,54 @@ variable "virtual_machines" {
 }
 
 
+# Note. Map of available 6 public IPs. You can use these names
+# in NAT rules.
+
+
+variable "public_ips" {
+  description = "Available public IPs."
+  default = {
+    0 = {
+      name = "public-ip-0"
+      description = ""
+    },
+    1 = {
+      name = "public-ip-1" 
+      description = ""
+    },
+    2 = {
+      name = "public-ip-2" 
+      description = ""
+    },
+    3 = {
+      name = "public-ip-3" 
+      description = ""
+    },
+    4 = {
+      name = "public-ip-4" 
+      description = ""
+    },
+    5 = {
+      name = "public-ip-5" 
+      description = ""
+    },
+  }
+}
+
+
+
+
+
+
+
+
 # Note. You can use `vdc_networks` or `virtual_machines` keys as 
 # address_targets here. Terraform will pick the IP address of 
 # the specific resource and use that in the actual NAT rule.
 
 # Note. You can specify the desired actual public IP address 
 # (`external_address`) in the rule, or you can use the 
-# `external_address_list_index`, which will pick the IP 
+# `external_address_target`, which will pick the IP 
 # addresss from the allocated IP pool (`edge_gateway_allocated_ips`). 
 
 # Note. Use Director UI to get the name for the Application
@@ -259,6 +307,7 @@ variable "nat_rules" {
     no-snat-to-ibm-cloud-166-9 = {
       rule_type   = "NO_SNAT"
       description = "NO_SNAT rule to application-network-1"
+      external_address_target = ""
       external_address = ""  
       internal_address_target = "application-network-1"
       internal_address = ""
@@ -269,6 +318,7 @@ variable "nat_rules" {
     no-snat-to-ibm-cloud-161-26 = {
       rule_type   = "NO_SNAT"
       description = "NO_SNAT rule to application-network-1"
+      external_address_target = ""
       external_address = ""  
       internal_address_target = "application-network-1"
       internal_address = ""
@@ -279,7 +329,7 @@ variable "nat_rules" {
     dnat-to-app-1 = {
       rule_type   = "DNAT"
       description = "DNAT rule to app-server-1"
-      external_address_list_index = 1
+      external_address_target = "public-ip-1"
       external_address = "" 
       internal_address_target = "app-server-1"
       internal_address = ""
@@ -291,7 +341,7 @@ variable "nat_rules" {
     dnat-to-jump-1 = {
       rule_type   = "DNAT"
       description = "DNAT rule to jump-server-1"
-      external_address_list_index = 2
+      external_address_target = "public-ip-2"
       external_address = "" 
       internal_address_target = "jump-server-1"
       internal_address = ""
@@ -303,7 +353,7 @@ variable "nat_rules" {
     snat-to-internet-1 = {
       rule_type = "SNAT"
       description = "SNAT rule to application-network-1"
-      external_address_list_index = 0
+      external_address_target = "public-ip-0"
       external_address = ""  
       internal_address_target = "application-network-1"
       internal_address = ""
@@ -314,7 +364,7 @@ variable "nat_rules" {
     snat-to-internet-2 = {
       rule_type = "SNAT"
       description = "SNAT rule to db-network-1"
-      external_address_list_index = 0
+      external_address_target = "public-ip-0"
       external_address = ""  
       internal_address_target = "db-network-1"
       internal_address = ""

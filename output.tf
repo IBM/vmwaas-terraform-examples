@@ -7,9 +7,11 @@ output "list_of_all_vdcs_inside_instance" {
   value = data.vcd_resource_list.list_of_vdcs.list
 }
 
+/*
 output "vdc_edge_name" {
   value = data.vcd_resource_list.list_of_vdc_edges.list
 }
+*/
 
 output "edge_gateway_name" {
   value = local.edge_gateway_name
@@ -35,6 +37,9 @@ output "edge_gateway_allocated_ips_end_address" {
   value = local.edge_gateway_allocated_ips_end_address
 }
 
+output "public_ips" {
+  value=local.public_ips 
+}
 
 ################################################################################
 # This code block outputs information about created vdc networks
@@ -53,3 +58,10 @@ output "creted_virtual_machines" {
   value = local.virtual_machines
 }
 
+################################################################################
+# This code block outputs information about created NAT rules
+################################################################################
+
+output "created_nat_rules" {
+  value = local.created_nat_rules
+}
