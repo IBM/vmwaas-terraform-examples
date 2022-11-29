@@ -10,6 +10,9 @@ data "vcd_resource_list" "list_of_vdcs" {
   list_mode = "name"
 }
 
+data "vcd_org_vdc" "org_vdc" {
+  name = var.vmwaas_vdc_name
+}
 
 data "vcd_resource_list" "list_of_vdc_edges" {
   name =  "list_of_vdc_edges"
@@ -18,16 +21,11 @@ data "vcd_resource_list" "list_of_vdc_edges" {
   vdc = var.vmwaas_vdc_name         # Filter per VDC name
 }
 
-
-data "vcd_org_vdc" "org_vdc" {
-  name = var.vmwaas_vdc_name
-}
-
-
 data "vcd_nsxt_edgegateway" "edge" {
   #name = var.vmwaas_edge_gateway_name
   name = data.vcd_resource_list.list_of_vdc_edges.list[0]
-  vdc = var.vmwaas_vdc_name
+  # vdc = var.vmwaas_vdc_name
+  owner_id = data.vcd_org_vdc.org_vdc.id  
 }
 
 

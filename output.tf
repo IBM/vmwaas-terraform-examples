@@ -37,6 +37,11 @@ output "edge_gateway_allocated_ips_end_address" {
   value = local.edge_gateway_allocated_ips_end_address
 }
 
+output "edge_gateway_owner_id" {
+  value = data.vcd_nsxt_edgegateway.edge
+}
+
+
 output "public_ips" {
   value=local.public_ips 
 }
