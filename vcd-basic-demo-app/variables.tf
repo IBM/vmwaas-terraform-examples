@@ -52,7 +52,7 @@ variable "vmwaas_allow_unverified_ssl" {
 
 variable "item_name_prefix" {
   description = "Add a prefix for instance names."
-  default = ""
+  default = "bryan"
 }
 
 
@@ -86,16 +86,16 @@ variable "vdc_networks" {
       description = "Application network 1"
       type = "routed"
       subnet = {
-        cidr = "172.26.1.0/24"
+        cidr = "172.26.100.0/24"
         prefix_length = 24
-        gateway = "172.26.1.1"
+        gateway = "172.26.100.1"
         static_ip_pool = {
-          start_address = "172.26.1.10"
-          end_address   = "172.26.1.100"
+          start_address = "172.26.100.10"
+          end_address   = "172.26.100.100"
         }
         dhcp_ip_pool = {
-          start_address = "172.26.1.101"
-          end_address   = "172.26.1.199"
+          start_address = "172.26.100.101"
+          end_address   = "172.26.100.199"
         }        
       }
     },
@@ -103,16 +103,16 @@ variable "vdc_networks" {
       description = "DB network 1"
       type = "routed"
       subnet = {
-        cidr = "172.26.2.0/24"
+        cidr = "172.26.200.0/24"
         prefix_length = 24
-        gateway = "172.26.2.1"
+        gateway = "172.26.200.1"
         static_ip_pool = {
-          start_address = "172.26.2.10"
-          end_address   = "172.26.2.100"
+          start_address = "172.26.200.10"
+          end_address   = "172.26.200.100"
         }
         dhcp_ip_pool = {
-          start_address = "172.26.2.101"
-          end_address   = "172.26.2.199"
+          start_address = "172.26.200.101"
+          end_address   = "172.26.200.199"
         }        
       }
     },
@@ -120,12 +120,12 @@ variable "vdc_networks" {
       description = "Isolated network 2"
       type = "isolated"
       subnet = {
-        cidr = "172.18.2.0/24"
+        cidr = "172.18.200.0/24"
         prefix_length = 24
-        gateway = "172.18.2.1"
+        gateway = "172.18.200.1"
         static_ip_pool = {
-          start_address = "172.18.2.10"
-          end_address   = "172.18.2.100"
+          start_address = "172.18.200.10"
+          end_address   = "172.18.200.100"
         }
         dhcp_ip_pool = {} # leave empty for isolated network   
       }
@@ -193,7 +193,7 @@ variable "virtual_machines" {
           name = "application-network-1"
           ip_allocation_mode = "MANUAL"
           is_primary = true
-          ip = "172.26.1.20"
+          ip = "172.26.100.20"
         },
       },
       disks = {
