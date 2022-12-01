@@ -7,6 +7,8 @@ output "list_of_all_vdcs_inside_instance" {
   value = data.vcd_resource_list.list_of_vdcs.list
 }
 
+
+
 /*
 output "vdc_edge_name" {
   value = data.vcd_resource_list.list_of_vdc_edges.list
