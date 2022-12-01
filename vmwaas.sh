@@ -39,6 +39,8 @@ case $1 in
         echo "Get virtual datacenters."
         echo
 
+
+
         action="VDCS"
         ;;
 
