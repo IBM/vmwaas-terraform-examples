@@ -88,7 +88,9 @@ then
     INSTANCES=$(curl -s -X GET "$URL/director_sites" -H "authorization: Bearer $IAM_TOKEN" -H "Content-Type:application/json")
 
     echo "Instances:"
-    echo $(echo $INSTANCES | jq -r .director_sites[].name)
+    echo
+    #echo $INSTANCES | jq -r .director_sites[]
+    echo $INSTANCES  | jq -r ".director_sites[] | {name, id, location: .clusters[0].location, status}" | jq -n ".|= [inputs]" | jq -r '(["NAME","DIRECTOR_SITE_ID","LOCATION","STATUS"]), (.[] | [.name, .id, .location, .status]) | @tsv' | column -t
 
 
     echo
@@ -107,10 +109,7 @@ then
 
     INSTANCES=$(curl -s -X GET "$URL/director_sites" -H "authorization: Bearer $IAM_TOKEN" -H "Content-Type:application/json")
 
-    INSTANCE_ID=$(echo $INSTANCES | jq '.director_sites[0] | select( .name == "'$INSTANCE_NAME'" )' | jq -r .id)
-
-    echo "Instance ID filtered:"
-    echo $INSTANCE_ID
+    INSTANCE_ID=$(echo $INSTANCES | jq '.director_sites[] | select( .name == "'$INSTANCE_NAME'" )' | jq -r .id)
 
     INSTANCE=$(curl -s -X GET "$URL/director_sites/$INSTANCE_ID" -H "authorization: Bearer $IAM_TOKEN" -H "Content-Type:application/json")
 
@@ -119,9 +118,9 @@ then
     #echo "Instance details:"
     #echo $INSTANCE | jq .
 
-    echo "Instance details filtered:"
-    echo $INSTANCE | jq ". | {name, id, clusters: .clusters}" 
-
+    echo "Instance details (filtered):"
+    echo
+    echo $INSTANCE | jq ". | {name, id, location: .clusters[0].location, hosts: .clusters[0].host_count, profile: .clusters[0].host_profile}" | jq -n ".|= [inputs]" | jq -r '(["NAME","DIRECTOR_SITE_ID","LOCATION","HOSTS","PROFILE"]), (.[] | [.name, .id, .location, .hosts, .profile]) | @tsv' | column -t
 
     echo
 
@@ -141,7 +140,12 @@ then
     VDCS=$(curl -s -X GET "$URL/vdcs" -H "authorization: Bearer $IAM_TOKEN" -H "Content-Type:application/json")
 
     echo "VDCs:"
-    echo $VDCS | jq ".vdcs[] | {name, id}" | jq -n ".|= [inputs]"
+    echo
+    #echo $VDCS | jq ".vdcs[]"
+    #echo $VDCS | jq ".vdcs[] | {name, id}" | jq -n ".|= [inputs]"
+    #echo $VDCS | jq ".vdcs[] | {name, id}" | jq -n ".|= [inputs]" | jq -r '.[] | [.name, .id]'
+    #echo $VDCS | jq ".vdcs[] | {name, id}" | jq -n ".|= [inputs]" | jq -r '.[] | [.name, .id] | @tsv ' | column -t
+    echo $VDCS | jq ".vdcs[] | {name, id, crn, director_site: .director_site.id}" | jq -n ".|= [inputs]" | jq -r '(["NAME","ID","DIRECTOR_SITE_ID"]), (.[] | [.name, .id, .director_site]) | @tsv' | column -t
 
     echo
 
@@ -161,8 +165,12 @@ then
     #echo "VDC details:"
     #echo $VDCS | jq '.vdcs[] | select( .name == "'$VDC_NAME'" )' 
 
-    echo "VDC details filtered:"
-    echo $VDCS | jq '.vdcs[] | select( .name == "'$VDC_NAME'" )' | jq ". | {name, org_name, url: .director_site.url}"
+    echo "VDC details (filtered):"
+    echo
+    #echo $VDCS | jq '.vdcs[] | select( .name == "'$VDC_NAME'" )' | jq ". | {name, org_name, url: .director_site.url}" 
+    echo $VDCS | jq '.vdcs[] | select( .name == "'$VDC_NAME'" )' | jq ". | [{name, org_name, url: .director_site.url}]" | jq -r '(["NAME","ORG","URL"]), (.[] | [.name, .org_name, .url]) | @tsv' | column -t
+
+    echo
 
 fi
 ####
@@ -177,15 +185,17 @@ then
 
     VDCS=$(curl -s -X GET "$URL/vdcs" -H "authorization: Bearer $IAM_TOKEN" -H "Content-Type:application/json")
 
-    echo "tfvars lines:"
-
     vmwaas_url=$(echo $VDCS | jq '.vdcs[] | select( .name == "'$VDC_NAME'" )' | jq ". | {url: .director_site.url}" | jq -r .url | awk -F '/tenant.' '{print $1}')
     vmwaas_org=$(echo $VDCS | jq '.vdcs[] | select( .name == "'$VDC_NAME'" )' | jq ". | {org_name"} | jq -r .org_name) 
     vmwaas_vdc_name=$(echo $VDCS | jq '.vdcs[] | select( .name == "'$VDC_NAME'" )' | jq ". | {name"} | jq -r .name) 
 
+    echo "tfvars lines:"
+    echo  
     echo "vmwaas_url = "'"'$vmwaas_url"/api"'"'
     echo "vmwaas_org = "'"'$vmwaas_org'"'
     echo "vmwaas_vdc_name = "'"'$vmwaas_vdc_name'"'
+
+    echo
 
 
 fi
@@ -201,16 +211,17 @@ then
 
     VDCS=$(curl -s -X GET "$URL/vdcs" -H "authorization: Bearer $IAM_TOKEN" -H "Content-Type:application/json")
 
-    echo "TF_VARs:"
-
     vmwaas_url=$(echo $VDCS | jq '.vdcs[] | select( .name == "'$VDC_NAME'" )' | jq ". | {url: .director_site.url}" | jq -r .url | awk -F '/tenant.' '{print $1}')
     vmwaas_org=$(echo $VDCS | jq '.vdcs[] | select( .name == "'$VDC_NAME'" )' | jq ". | {org_name"} | jq -r .org_name) 
     vmwaas_vdc_name=$(echo $VDCS | jq '.vdcs[] | select( .name == "'$VDC_NAME'" )' | jq ". | {name"} | jq -r .name) 
 
+    echo "TF_VARs:"
+    echo
     echo "export TF_VAR_vmwaas_url="'"'$vmwaas_url"/api"'"'
     echo "export TF_VAR_vmwaas_org="'"'$vmwaas_org'"'
     echo "export TF_VAR_vmwaas_vdc_name="'"'$vmwaas_vdc_name'"'
 
+    echo
 
 fi
 
