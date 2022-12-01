@@ -30,7 +30,7 @@ case $1 in
     in)
         echo "Get instance details."
         echo
-
+        echo "USAGE : vmwaas in '"'name-of-the-vdc'"'."
 
         action="IN"
         ;;
@@ -45,7 +45,7 @@ case $1 in
     vdc)
         echo "Get details for a single virtual datacenter."
         echo
-
+        echo "USAGE : vmwaas tf '"'name-of-the-vdc'"'."
 
         action="VDC"
         ;;
@@ -53,7 +53,7 @@ case $1 in
     tf)
         echo "Get variables for terraform for tfvars file."
         echo
-
+        echo "USAGE : vmwaas tf '"'name-of-the-vdc'"'."
 
         action="TF"
         ;;
@@ -61,6 +61,7 @@ case $1 in
     tfvars)
         echo "Get variables for terraform in export format."
         echo
+        echo "USAGE : vmwaas tfvars '"'name-of-the-vdc'"'."
 
         action="TF_VARS"
         ;;
@@ -78,6 +79,9 @@ esac
 
 if [ $action == "INS" ]
 then
+
+    ### Get instances
+
 
     ### Get instances
 
