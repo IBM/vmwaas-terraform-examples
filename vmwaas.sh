@@ -24,39 +24,53 @@ URL="https://api.$REGION.vmware.cloud.ibm.com/v1"
 case $1 in
     ins)
         echo "Get instances."
+        echo
+        
         action="INS"
         ;;
 
     in)
         echo "Get instances."
+        echo
+        
         action="IN"
         ;;
 
     vdcs)
         echo "Get virtual datacenters."
+        echo
+        
         action="VDCS"
         ;;
 
     vdc)
         echo "Get details for a single virtual datacenter."
         echo "USAGE : vmwaas wdc '"'name-of-the-vdc'"'."
+        echo
+
         action="VDC"
         ;;
 
     tf)
         echo "Get variables for terraform for tfvars file."
         echo "USAGE : vmwaas tf '"'name-of-the-vdc'"'."
+        echo
+
         action="TF"
         ;;
 
     tfvars)
         echo "Get variables for terraform in export format."
         echo "USAGE : vmwaas tfvars '"'name-of-the-vdc'"'."
+        echo
+        
         action="TF_VARS"
         ;;
 
     *)
        echo "USAGE : vmwaas [ ins | in | vdcs | vdc | tf | tfvars ]"
+       echo
+       
        exit
        ;;
 esac
