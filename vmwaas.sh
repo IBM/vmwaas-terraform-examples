@@ -89,6 +89,8 @@ then
 
     INSTANCE_NAME=$2
 
+    INSTANCES=$(curl -s -X GET "$URL/director_sites" -H "authorization: Bearer $IAM_TOKEN" -H "Content-Type:application/json")
+
     INSTANCE_ID=$(echo $INSTANCES | jq '.director_sites[0] | select( .name == "'$INSTANCE_NAME'" )' | jq -r .id)
 
     echo "Instance ID filtered:"
