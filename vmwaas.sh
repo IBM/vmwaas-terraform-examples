@@ -3,11 +3,9 @@
 
 # Check cURL command if available (required), abort if does not exists
 type curl >/dev/null 2>&1 || { echo >&2 "This script requires jq, curl but it's not installed. Aborting."; exit 1; }
-echo
 
 # Check jq command if available (required), abort if does not exists
 type jq >/dev/null 2>&1 || { echo >&2 "This script requires jq, but it's not installed. Aborting."; exit 1; }
-echo
 
 
 # Get IAM token
