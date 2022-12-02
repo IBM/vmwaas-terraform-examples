@@ -7,8 +7,107 @@ type curl >/dev/null 2>&1 || { echo >&2 "This script requires jq, curl but it's 
 # Check jq command if available (required), abort if does not exists
 type jq >/dev/null 2>&1 || { echo >&2 "This script requires jq, but it's not installed. Aborting."; exit 1; }
 
+# Get args
 
-# Check REGION
+case $1 in
+    ins)
+        echo "Get instances."
+        echo
+        
+        action="INS"
+        ;;
+
+    in)
+        echo "Get instance details."
+        echo
+
+        if [[ $2 == "" ]] 
+        then
+            echo "USAGE : vmwaas in '"'name-of-the-vdc'"'."
+            exit 1
+        else
+            action="IN"
+        fi
+
+        ;;
+
+    vdcs)
+        echo "Get virtual datacenters."
+        echo
+
+        action="VDCS"
+        ;;
+
+    vdc)
+        echo "Get details for a single virtual datacenter."
+        echo
+
+        if [[ $2 == "" ]] 
+        then
+            echo "USAGE : vmwaas vdc '"'name-of-the-vdc'"'."
+            exit 1
+        else
+            action="VDC"
+        fi
+
+        ;;
+
+    vdcgw)
+        echo "Get details for a single virtual datacenter gateway and IP addresses."
+        echo
+
+        if [[ $2 == "" ]] 
+        then
+            echo "USAGE : vmwaas vdcgw '"'name-of-the-vdc'"'."
+            exit 1
+        else
+            action="VDCGW"
+        fi
+
+        ;;
+
+    tf)
+        echo "Get variables for terraform for tfvars file."
+        echo
+
+        if [[ $2 == "" ]] 
+        then
+            echo "USAGE : vmwaas tf '"'name-of-the-vdc'"'."
+            exit 1
+        else
+            action="TF"
+        fi
+        
+        ;;
+
+    tfvars)
+        echo "Get variables for terraform in export format."
+        echo
+
+        if [[ $2 == "" ]] 
+        then
+            echo "USAGE : vmwaas tfvars '"'name-of-the-vdc'"'."
+            exit 1
+        else
+            action="TF_VARS"
+        fi
+
+        ;;
+
+    *)
+       echo "USAGE : vmwaas [ ins | in | vdcs | vdc | vdcgw | tf | tfvars ]"
+       echo
+       echo "Set your API key with '"'export IBMCLOUD_API_KEY=your-api-key-here'"'"
+       echo "Set your REGION with '"'export IBMCLOUD_REGION=region-here'"'. Default '"'us-south'"'"
+       echo
+       
+       exit
+       ;;
+esac
+
+
+
+# Check API KEY environmental variable
 
 if [[ $IBMCLOUD_API_KEY == "" ]] 
 then
@@ -19,7 +118,7 @@ then
 fi
 
 
-# Get IAM token
+# Check REGION environmental variable
 
 if [[ $IBMCLOUD_REGION == "" ]] 
 then
@@ -37,80 +136,14 @@ URL="https://api.$REGION.vmware.cloud.ibm.com/v1"
 
 if [[ $IAM_TOKEN == null ]] 
 then
-  echo "USAGE : vmwaas [ ins | in | vdcs | vdc | vdcgw | tf | tfvars ]"
   echo
-  echo "ERROR: Getting IAM token failed. Check your API key. Set your API key with '"'export IBMCLOUD_API_KEY=your-api-key-here'"'"
+  echo "ERROR: Getting IAM token failed. Check your API key and REGION."
+  echo
+  echo "Set your API key with '"'export IBMCLOUD_API_KEY=your-api-key-here'"'"
+  echo "Set your REGION with '"'export IBMCLOUD_REGION=region-here'"'. Default '"'us-south'"'"
+  echo
   exit 1  
 fi
-
-
-# Get args
-
-case $1 in
-    ins)
-        echo "Get instances."
-        echo
-        
-        action="INS"
-        ;;
-
-    in)
-        echo "Get instance details."
-        echo
-        echo "USAGE : vmwaas in '"'name-of-the-vdc'"'."
-
-        action="IN"
-        ;;
-
-    vdcs)
-        echo "Get virtual datacenters."
-        echo
-
-        action="VDCS"
-        ;;
-
-    vdc)
-        echo "Get details for a single virtual datacenter."
-        echo
-        echo "USAGE : vmwaas vdc '"'name-of-the-vdc'"'."
-
-        action="VDC"
-        ;;
-
-    vdcgw)
-        echo "Get details for a single virtual datacenter gateway and IP addresses."
-        echo
-        echo "USAGE : vmwaas vdcgw '"'name-of-the-vdc'"'."
-
-        action="VDCGW"
-        ;;
-
-    tf)
-        echo "Get variables for terraform for tfvars file."
-        echo
-        echo "USAGE : vmwaas tf '"'name-of-the-vdc'"'."
-
-        action="TF"
-        ;;
-
-    tfvars)
-        echo "Get variables for terraform in export format."
-        echo
-        echo "USAGE : vmwaas tfvars '"'name-of-the-vdc'"'."
-
-        action="TF_VARS"
-        ;;
-
-    *)
-       echo "USAGE : vmwaas [ ins | in | vdcs | vdc | vdcgw | tf | tfvars ]"
-       echo
-       echo "Set your API key with '"'export IBMCLOUD_API_KEY=your-api-key-here'"'"
-       echo "Set your REGION with '"'export IBMCLOUD_REGION=region-here'"'. Default '"'us-south'"'"
-       echo
-       
-       exit
-       ;;
-esac
 
 
 ####
