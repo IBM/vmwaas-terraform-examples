@@ -8,13 +8,40 @@ type curl >/dev/null 2>&1 || { echo >&2 "This script requires jq, curl but it's 
 type jq >/dev/null 2>&1 || { echo >&2 "This script requires jq, but it's not installed. Aborting."; exit 1; }
 
 
+# Check REGION
+
+if [[ $IBMCLOUD_API_KEY == "" ]] 
+then
+  echo "USAGE : vmwaas [ ins | in | vdcs | vdc | vdcgw | tf | tfvars ]"
+  echo
+  echo "ERROR: Set your API key with '"'export IBMCLOUD_API_KEY=your-api-key-here'"'"
+  exit 1  
+fi
+
+
 # Get IAM token
 
-REGION="us-south"
+if [[ $IBMCLOUD_REGION == "" ]] 
+then
+  REGION="us-south"
+else
+  REGION=$IBMCLOUD_REGION
+fi
+
+
+# Get IAM token
 
 IAM_TOKEN=$(curl -s -X POST "https://iam.cloud.ibm.com/identity/token" -H "Content-Type: application/x-www-form-urlencoded" -d "grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey=$IBMCLOUD_API_KEY" | jq -r .access_token)
 
 URL="https://api.$REGION.vmware.cloud.ibm.com/v1"
+
+if [[ $IAM_TOKEN == null ]] 
+then
+  echo "USAGE : vmwaas [ ins | in | vdcs | vdc | vdcgw | tf | tfvars ]"
+  echo
+  echo "ERROR: Getting IAM token failed. Check your API key. Set your API key with '"'export IBMCLOUD_API_KEY=your-api-key-here'"'"
+  exit 1  
+fi
 
 
 # Get args
@@ -75,7 +102,10 @@ case $1 in
         ;;
 
     *)
-       echo "USAGE : vmwaas [ ins | in | vdcs | vdc | tf | tfvars ]"
+       echo "USAGE : vmwaas [ ins | in | vdcs | vdc | vdcgw | tf | tfvars ]"
+       echo
+       echo "Set your API key with '"'export IBMCLOUD_API_KEY=your-api-key-here'"'"
+       echo "Set your REGION with '"'export IBMCLOUD_REGION=region-here'"'. Default '"'us-south'"'"
        echo
        
        exit
