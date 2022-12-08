@@ -219,7 +219,7 @@ then
     #echo $VDCS | jq ".vdcs[] | {name, id}" | jq -n ".|= [inputs]"
     #echo $VDCS | jq ".vdcs[] | {name, id}" | jq -n ".|= [inputs]" | jq -r '.[] | [.name, .id]'
     #echo $VDCS | jq ".vdcs[] | {name, id}" | jq -n ".|= [inputs]" | jq -r '.[] | [.name, .id] | @tsv ' | column -t
-    echo $VDCS | jq ".vdcs[] | {name, id, crn, director_site: .director_site.id}" | jq -n ".|= [inputs]" | jq -r '(["NAME","ID","DIRECTOR_SITE_ID"]), (.[] | [.name, .id, .director_site]) | @tsv' | column -t
+    echo $VDCS | jq ".vdcs[] | {name, id, crn, director_site: .director_site.id}" | jq -n ".|= [inputs]" | jq -r '(["NAME","ID","DIRECTOR_SITE_ID","CRN"]), (.[] | [.name, .id, .director_site, .crn]) | @tsv' | column -t
 
     echo
 

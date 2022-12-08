@@ -231,6 +231,9 @@ resource "vcd_vm" "virtual_machines" {
   cpus                   = each.value.cpus
   storage_profile        = each.value.storage_profile
 
+  cpu_hot_add_enabled    = each.value.cpu_hot_add_enabled
+  memory_hot_add_enabled = each.value.memory_hot_add_enabled
+
   dynamic "network" {
     for_each = each.value.networks
 
@@ -614,5 +617,14 @@ resource "vcd_nsxt_firewall" "firewall" {
 }
 
 
+
+
+locals {
+  created_fw_rules = vcd_nsxt_firewall.firewall
+  }
+
+output "created_fw_rules" {
+  value = local.created_fw_rules
+}
 
 #*/

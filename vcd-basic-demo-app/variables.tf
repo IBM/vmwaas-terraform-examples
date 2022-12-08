@@ -152,6 +152,8 @@ variable "virtual_machines" {
       }
       memory          = 8192
       cpus            = 2
+      cpu_hot_add_enabled = true
+      memory_hot_add_enabled = true
       storage_profile = "2 IOPS/GB"
       networks = {
         0 = {
@@ -187,6 +189,8 @@ variable "virtual_machines" {
       }
       memory        = 8192
       cpus          = 2
+      cpu_hot_add_enabled = true
+      memory_hot_add_enabled = true
       storage_profile = "2 IOPS/GB"
       networks = {
         0 = {
@@ -214,6 +218,8 @@ variable "virtual_machines" {
       }
       memory        = 8192
       cpus          = 2
+      cpu_hot_add_enabled = true
+      memory_hot_add_enabled = true
       storage_profile = ""
       networks = {
         0 = {
@@ -232,6 +238,8 @@ variable "virtual_machines" {
       }
       memory        = 8192
       cpus          = 2
+      cpu_hot_add_enabled = true
+      memory_hot_add_enabled = true
       storage_profile = ""
       networks = {
         0 = {
