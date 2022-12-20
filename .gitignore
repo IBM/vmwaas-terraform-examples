@@ -45,3 +45,5 @@ override.tf.json
 *.tf-NOT
 
 *.bkp
+
+*.sh-not
