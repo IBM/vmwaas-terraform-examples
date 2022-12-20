@@ -13,7 +13,7 @@ vmwaas_password = "put-your-password-here"
 
 # Note. Use a common name prefix for each item. 
 
-item_name_prefix = "sami-demo"
+item_name_prefix = "demo"
 
 # Note. IBM Cloud DNS servers listed here. 
 # You may also use your own here. 
