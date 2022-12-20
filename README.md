@@ -4,7 +4,7 @@ IBM Cloud® for VMware as a Service is a managed VMware service which delivers V
 
 ## Getting API end points and virtual data center details
 
-Use the IBM Cloud Console to create your VMware as a Service - single tenant instance and one or more virtual data centers. You can collect the API details and virtual data center IDs from the console, or you can alternatively use the attached `vmwaas.sh` script which will collect these values using API.
+Use the [IBM Cloud Console](http://cloud.ibm.com/vmware) to create your VMware as a Service - single tenant instance and one or more virtual data centers on it. Once deployed, you can collect the API details and virtual data center IDs from the Console, or you can alternatively use the attached `vmwaas.sh` shell script. It will collect these values using VMware as a Service API.
 
 Configure your region and API key with:
 
@@ -23,7 +23,7 @@ USAGE : vmwaas [ ins | in | vdcs | vdc | vdcgw | tf | tfvars ]
 ```
 
 
-For example, to list your instances:
+To list your instances:
 
 ```bash
 % ./vmwaas.sh ins
@@ -37,7 +37,7 @@ demo          b75efs1c-35df-40b3-b569-1124be37687d  us-south-1  ReadyToUse
 ```
 
 
-For example, to list your virtual data centers:
+To list your virtual data centers:
 
 ```bash
 % ./vmwaas.sh vdcs           
@@ -64,9 +64,15 @@ export TF_VAR_vmwaas_org="f37f3422-e6c4-427e-b277-9fec334b99fb"
 export TF_VAR_vmwaas_vdc_name="vdc-sami"
 ```
 
+## Virtual data center infrastructure basic terraform example
+
+Coming.
+
 ## Virtual data center infrastructure automation example
 
-This demo terraform deployment deploys an example infrastructure, which consists of two routed and one isolated virtual data center networks, three virtual machines and example source (SNAT) and destination (DNAT) network address translation and firewall rules. An overview of the deployment is shown below.
+This demo terraform deployment deploys an example infrastructure, which consists of two routed and one isolated virtual data center networks, three virtual machines and example source (SNAT) and destination (DNAT) network address translation and firewall rules. 
+
+An overview of the deployment is shown below.
 
 ![Basic infrastructure](./images/diagrams-tf-vmwaas-basic.svg)
 
@@ -81,7 +87,7 @@ This demo terraform deployment deploys an example infrastructure, which consists
 9. Firewall rules are provisioned to secure network access to the environment. To create firewall rules, Static Groups and IP sets are created for networks and individual IP addresses.
 
 
-An example terraform.tfvars file is shown below.
+In this example, the creation is fully controlled though terraform variables - you do not need to change the actual terraform templates. An example `terraform.tfvars` file is provided below and example variable values are provided with explanations:
 
 ```terraform
 # Note. Variable values to access your Director instance. Use the Director portal
