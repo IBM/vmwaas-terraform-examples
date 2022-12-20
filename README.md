@@ -180,7 +180,6 @@ vdc_networks = {
 
 
 virtual_machines = {
-#/*
     app-server-1 = {
         image = {
             catalog_name  = "Public Catalog"

@@ -89,7 +89,6 @@ vdc_networks = {
 
 
 virtual_machines = {
-#/*
     app-server-1 = {
         image = {
             catalog_name  = "Public Catalog"
@@ -162,7 +161,6 @@ virtual_machines = {
             },
         }    
     },
-#/*
     jump-server-1 = {
         image = {
             catalog_name  = "Public Catalog"
@@ -183,7 +181,6 @@ virtual_machines = {
         },
         disks = {}
     },
-#*/
 }
 
 
