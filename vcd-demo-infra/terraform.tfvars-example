@@ -13,7 +13,7 @@ vmwaas_password = "put-your-password-here"
 
 # Note. Use a common name prefix for each item. 
 
-item_name_prefix = "demo"
+item_name_prefix = "sami-demo"
 
 # Note. IBM Cloud DNS servers listed here. 
 # You may also use your own here. 
@@ -61,15 +61,15 @@ vdc_networks = {
         }
     },
     isolated-network-1 = {
-        description = "Isolated network 2"
+        description = "Isolated network 1"
         type = "isolated"
         subnet = {
-            cidr = "172.18.2.0/24"
+            cidr = "172.26.3.0/24"
             prefix_length = 24
-            gateway = "172.18.2.1"
+            gateway = "172.26.3.1"
             static_ip_pool = {
-                start_address = "172.18.2.10"
-                end_address   = "172.18.2.100"
+                start_address = "172.26.3.10"
+                end_address   = "172.26.3.100"
             }
             dhcp_ip_pool = {} # leave empty for isolated network   
         }
@@ -84,7 +84,12 @@ vdc_networks = {
 # Note. Check the storage profile names and apply to your VMs / disks.
 # If left empty, default profile is used.
 
+#cpu_hot_add_enabled
+#memory_hot_add_enabled
+
+
 virtual_machines = {
+#/*
     app-server-1 = {
         image = {
             catalog_name  = "Public Catalog"
@@ -103,43 +108,6 @@ virtual_machines = {
                 ip = ""
             },
         }
-        disks = {
-            0 = {
-                name = "logDisk"
-                size_in_mb = "100"
-                bus_type = "SCSI"
-                bus_sub_type = "VirtualSCSI"
-                bus_number = 1
-                storage_profile = ""
-        },
-            1 = {
-                name = "dataDisk"
-                size_in_mb = "100"
-                bus_type = "SCSI"
-                bus_sub_type = "VirtualSCSI"
-                bus_number = 1
-                storage_profile = "2 IOPS/GB"
-        }
-        }
-    },
-    app-server-2 = {
-        image = {
-            catalog_name  = "Public Catalog"
-            template_name = "RedHat-8-Template-Official"
-        }
-        memory        = 8192
-        cpus          = 2
-        cpu_hot_add_enabled = true
-        memory_hot_add_enabled = true
-        storage_profile = "2 IOPS/GB"
-        networks = {
-            0 = {
-                name = "application-network-1"
-                ip_allocation_mode = "MANUAL"
-                is_primary = true
-                ip = "172.26.1.20"
-            },
-        },
         disks = {
             0 = {
                 name = "logDisk"
@@ -168,9 +136,33 @@ virtual_machines = {
                 is_primary = true
                 ip = ""
             },
+            1 = {
+                name = "isolated-network-1"
+                ip_allocation_mode = "POOL"
+                is_primary = false
+                ip = ""
+            },
         }
-        disks = {}
+        disks = {
+            0 = {
+                name = "dbDisk"
+                size_in_mb = "100"
+                bus_type = "SCSI"
+                bus_sub_type = "VirtualSCSI"
+                bus_number = 1
+                storage_profile = ""
+            },
+            1 = {
+                name = "dbLogDisk"
+                size_in_mb = "100"
+                bus_type = "SCSI"
+                bus_sub_type = "VirtualSCSI"
+                bus_number = 1
+                storage_profile = ""
+            },
+        }    
     },
+#/*
     jump-server-1 = {
         image = {
             catalog_name  = "Public Catalog"
@@ -191,7 +183,10 @@ virtual_machines = {
         },
         disks = {}
     },
+#*/
 }
+
+
 
 
 # Note. Map of available 6 public IPs. You can use these names
@@ -224,7 +219,6 @@ public_ips = {
         description = ""
     },
 }
-
 
 # Note. You can use `vdc_networks` or `virtual_machines` keys as 
 # address_targets here. Terraform will pick the IP address of 
@@ -281,7 +275,7 @@ nat_rules = {
         internal_address_target = "jump-server-1"
         internal_address = ""
         dnat_external_port = ""
-        app_port_profile = "RDP"
+        app_port_profile = ""
         logging = false
         priority = 90
     },
@@ -308,7 +302,6 @@ nat_rules = {
         priority = 100
     },  
   }  
-
 
 # Note. You can create IP sets to be used in firewall rules.
 
@@ -351,7 +344,7 @@ firewall_rules = {
         logging = false
     },
     dnat-to-jump-1-ingress = {
-        action  = "DROP"
+        action  = "ALLOW"
         direction = "IN"
         ip_protocol = "IPV4"
         destinations = ["dnat-to-jump-1"]

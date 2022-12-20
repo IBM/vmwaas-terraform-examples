@@ -239,7 +239,8 @@ resource "vcd_vm" "virtual_machines" {
 
     content {
       type               = "org"
-      name               = vcd_network_routed_v2.routed_network[network.value.name].name
+      #name               = vcd_network_routed_v2.routed_network[network.value.name].name
+      name               = local.created_vdc_networks[network.value.name].type == "routed" ? vcd_network_routed_v2.routed_network[network.value.name].name : vcd_network_isolated_v2.isolated_network[network.value.name].name
       ip_allocation_mode = network.value.ip_allocation_mode
       is_primary         = network.value.is_primary
       ip                 = network.value.ip_allocation_mode == "MANUAL" ? network.value.ip : ""
