@@ -47,13 +47,13 @@ Get virtual datacenters.
 VDCs:
 
 NAME             ID                                    DIRECTOR_SITE_ID                      CRN
-vdc-sami         5e37ed2d-54cc-4798-96cf-c363de922ab4  b75efs1c-35df-40b3-b569-1124be37687d  crn:v1:bluemix:public:vmware:us-south:...
+vdc-demo         5e37ed2d-54cc-4798-96cf-c363de922ab4  b75efs1c-35df-40b3-b569-1124be37687d  crn:v1:bluemix:public:vmware:us-south:...
 ```
 
 To get terraform TF_VARs for authentication:
 
 ```bash
-% ./vmwaas.sh tfvars vdc-sami
+% ./vmwaas.sh tfvars vdc-demo
 Get variables for terraform in export format.
 
 
@@ -61,7 +61,7 @@ TF_VARs:
 
 export TF_VAR_vmwaas_url="https://<your_url>.us-south.vmware.cloud.ibm.com/api"
 export TF_VAR_vmwaas_org="f37f3422-e6c4-427e-b277-9fec334b99fb"
-export TF_VAR_vmwaas_vdc_name="vdc-sami"
+export TF_VAR_vmwaas_vdc_name="vdc-demo"
 ```
 
 ## Virtual data center infrastructure basic terraform example
@@ -104,7 +104,7 @@ vmwaas_password = "put-your-password-here"
 
 # Note. Use a common name prefix for each item. 
 
-item_name_prefix = "sami-demo"
+item_name_prefix = "demo"
 
 # Note. IBM Cloud DNS servers listed here. 
 # You may also use your own here. 
