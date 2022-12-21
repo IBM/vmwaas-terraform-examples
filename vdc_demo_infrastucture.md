@@ -6,7 +6,7 @@ An overview of the deployment is shown below.
 
 ![Basic infrastructure](./images/diagrams-tf-vmwaas-basic-no-steps.svg)
 
-In this example, the creation is fully controlled though terraform variables - you do not need to change the actual terraform templates. An example `terraform.tfvars` file is provided below and example variable values are provided with explanations:
+The example terraform template is located in folder [`vcd-demo-infra`](./vcd-demo-infra/). In this example, the creation is fully controlled though terraform variables - you do not need to change the actual terraform templates. An example `terraform.tfvars-example` file is provided below and example values are provided with explanations:
 
 ```terraform
 # Note. Variable values to access your Director instance. Use the Director portal
