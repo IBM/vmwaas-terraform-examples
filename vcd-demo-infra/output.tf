@@ -66,6 +66,20 @@ output "created_nat_rules" {
   value = local.created_nat_rules
 }
 
+
+################################################################################
+# This code block outputs information about created IP Sets and Static Groups
+################################################################################
+
+output "created_ip_sets" {
+  value = local.ip_sets
+}
+
+
+output "created_static_groups" {
+  value = local.created_security_groups
+}
+
 ################################################################################
 # This code block outputs information about created FW rules
 ################################################################################

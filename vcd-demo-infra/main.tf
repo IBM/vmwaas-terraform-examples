@@ -477,14 +477,16 @@ locals {
 ################################################################################
 
 locals {
-  all_org_vdc_routed_networks = { 
+  all_org_vdc_routed_networks = {                                 # special group for all routed networks 
     all-org-vdc-routed-networks = {
       member_org_network_ids = [for k,v in var.vdc_networks : vcd_network_routed_v2.routed_network[k].id if v.type == "routed"]
+      org_networks = [for k,v in var.vdc_networks : vcd_network_routed_v2.routed_network[k].name if v.type == "routed"]
       description = "All routed networks"
     }
   }
   org_vdc_routed_networks = {for k,v in var.vdc_networks : k => { 
       member_org_network_ids = [vcd_network_routed_v2.routed_network[k].id]
+      org_networks = [vcd_network_routed_v2.routed_network[k].name]
       description = v.description
     } if v.type == "routed"
   }
@@ -506,6 +508,14 @@ resource "vcd_nsxt_security_group" "security_group" {
 }
 
 
+
+locals {
+  created_security_groups = { for k,v in local.security_groups : k => {
+      org_networks = v.org_networks
+      description = v.description
+    }    
+  }
+}
 
 ################################################################################
 # This code block creates IP sets
@@ -600,6 +610,8 @@ resource "vcd_nsxt_firewall" "firewall" {
       #name                 = rule.key
       name                 = var.item_name_prefix == "" ? rule.key : "${var.item_name_prefix}-${rule.key}"
 
+      enabled              = rule.value.enabled
+
       direction            = rule.value.direction
       ip_protocol          = rule.value.ip_protocol
       source_ids           = concat(
@@ -618,11 +630,34 @@ resource "vcd_nsxt_firewall" "firewall" {
 }
 
 
+/*
 locals {
   created_fw_rules = vcd_nsxt_firewall.firewall
   }
+*/
 
 
-
-
-
+locals {
+  created_fw_rules = {
+    id = vcd_nsxt_firewall.firewall.id
+    org = vcd_nsxt_firewall.firewall.org
+    rule = [ for k,v in vcd_nsxt_firewall.firewall.rule : {
+      name = v.name
+      action = v.action
+      direction = v.direction
+      enabled = v.enabled
+      ip_protocol = v.ip_protocol
+      app_port_profiles = flatten([ for id in v.app_port_profile_ids : [ for app_k,app_v in data.vcd_nsxt_app_port_profile.system : app_k if app_v.id == id ]])
+      destinations = flatten(concat(
+          [ for id in v.destination_ids : [ for ipset_k,ipset_v in vcd_nsxt_ip_set.ip_set : ipset_k if ipset_v.id == id ]],
+          [ for id in v.destination_ids : [ for sg_k,sg_v in vcd_nsxt_security_group.security_group : sg_k if sg_v.id == id ]],
+          ))
+      sources = flatten(concat(
+          [ for id in v.source_ids : [ for ipset_k,ipset_v in vcd_nsxt_ip_set.ip_set : ipset_k if ipset_v.id == id ]],
+          [ for id in v.source_ids : [ for sg_k,sg_v in vcd_nsxt_security_group.security_group : sg_k if sg_v.id == id ]],
+          ))
+      logging = v.logging
+      }
+    ]
+  }
+}

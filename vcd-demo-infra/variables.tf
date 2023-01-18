@@ -416,6 +416,7 @@ variable "firewall_rules" {
       sources = ["application-network-1", "db-network-1"]
       system_app_ports = []
       logging = false
+      enabled=true
     },
     dnat-to-app-1-ingress = {
       action  = "ALLOW"
@@ -425,6 +426,7 @@ variable "firewall_rules" {
       sources = []
       system_app_ports = ["SSH","HTTPS","ICMP ALL"]
       logging = false
+      enabled=true
     },
     dnat-to-jump-1-ingress = {
       action  = "DROP"
@@ -434,6 +436,7 @@ variable "firewall_rules" {
       sources = []
       system_app_ports = ["RDP"]
       logging = false
+      enabled=true
     },
   }
 }
