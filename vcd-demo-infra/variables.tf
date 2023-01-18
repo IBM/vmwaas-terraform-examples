@@ -74,6 +74,7 @@ variable "dns_servers" {
 }
 
 
+# Note. Create virtual data center netoworks of type `routed` or
 # Note. Create virtual data center networks of type `routed` or
 # `isolated`. You can define one `static_ip_pool`and one
 # `dhcp_ip_pool` for each.
