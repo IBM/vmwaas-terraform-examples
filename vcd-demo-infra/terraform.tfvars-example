@@ -300,6 +300,10 @@ nat_rules = {
     },  
   }  
 
+# Note. This terraform will an create IP set for each NAT rule, 
+# and it will use the NAT key as the `name` and `external_address`
+# or IP address of `external_address_target` as the IP address.
+
 # Note. You can create IP sets to be used in firewall rules.
 
 ip_sets = {

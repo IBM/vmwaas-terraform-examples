@@ -379,7 +379,11 @@ variable "nat_rules" {
   }  
 }
 
-# Note. You can create IP sets to be used in firewall rules.
+# Note. This terraform will an create IP set for each NAT rule, 
+# and it will use the NAT key as the `name` and `external_address`
+# or IP address of `external_address_target` as the IP address.
+
+# Note. You can create additional IP sets to be used in firewall rules.
 
 variable "ip_sets" {
   description = "Custom IP sets to create."
