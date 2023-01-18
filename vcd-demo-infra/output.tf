@@ -53,7 +53,7 @@ output "created_vdc_networks" {
 # This code block outputs information about created virtual machines
 ################################################################################
 
-output "creted_virtual_machines" {
+output "created_virtual_machines" {
   sensitive = false
   value = local.virtual_machines
 }

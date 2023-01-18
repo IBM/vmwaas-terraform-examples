@@ -622,3 +622,7 @@ locals {
   created_fw_rules = vcd_nsxt_firewall.firewall
   }
 
+
+
+
+

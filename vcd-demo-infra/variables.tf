@@ -292,11 +292,6 @@ variable "public_ips" {
 
 
 
-
-
-
-
-
 # Note. You can use `vdc_networks` or `virtual_machines` keys as 
 # address_targets here. Terraform will pick the IP address of 
 # the specific resource and use that in the actual NAT rule.
