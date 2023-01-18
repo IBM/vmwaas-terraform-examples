@@ -1,3 +1,14 @@
+# Virtual data center infrastructure automation example
+
+This demo terraform deployment deploys an example infrastructure, which consists of two routed and one isolated virtual data center networks, three virtual machines and example source (SNAT) and destination (DNAT) network address translation and firewall rules.
+
+An overview of the deployment is shown below.
+
+![Basic infrastructure](./images/diagrams-tf-vmwaas-basic-no-steps.svg)
+
+The example terraform template is located in folder [`vcd-demo-infra`](./vcd-demo-infra/). In this example, the creation is fully controlled though terraform variables - you do not need to change the actual terraform templates. An example `terraform.tfvars-example` file is provided below and example values are provided with explanations:
+
+```terraform
 # Note. Variable values to access your Director instance. Use the Director portal
 # to figure our your values here.
 
@@ -7,8 +18,7 @@ vmwaas_vdc_name = "put-your-vdc-name-here"
 
 vmwaas_user = "put-your-username-here"
 vmwaas_password = "put-your-password-here"
-#vmwaas_api_token = ""
-
+#vmwaas_api_token = ""                                  # Note. This will be supported in the future.
 
 
 # Note. Use a common name prefix for each item. 
@@ -351,3 +361,4 @@ firewall_rules = {
     },
 }
 
+``` 

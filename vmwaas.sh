@@ -99,8 +99,6 @@ case $1 in
        echo
        echo "Set your API key with '"'export IBMCLOUD_API_KEY=your-api-key-here'"'"
        echo "Set your REGION with '"'export IBMCLOUD_REGION=region-here'"'. Default '"'us-south'"'"
-       echo
-       
        exit
        ;;
 esac
