@@ -24,7 +24,7 @@ data "vcd_resource_list" "list_of_vdc_edges" {
 data "vcd_nsxt_edgegateway" "edge" {
   #name = var.vmwaas_edge_gateway_name
   name = data.vcd_resource_list.list_of_vdc_edges.list[0]
-  # vdc = var.vmwaas_vdc_name
+  #vdc = var.vmwaas_vdc_name
   owner_id = data.vcd_org_vdc.org_vdc.id  
 }
 
@@ -618,14 +618,7 @@ resource "vcd_nsxt_firewall" "firewall" {
 }
 
 
-
-
 locals {
   created_fw_rules = vcd_nsxt_firewall.firewall
   }
 
-output "created_fw_rules" {
-  value = local.created_fw_rules
-}
-
-#*/

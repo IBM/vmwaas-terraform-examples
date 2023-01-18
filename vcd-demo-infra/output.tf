@@ -8,13 +8,6 @@ output "list_of_all_vdcs_inside_instance" {
 }
 
 
-
-/*
-output "vdc_edge_name" {
-  value = data.vcd_resource_list.list_of_vdc_edges.list
-}
-*/
-
 output "edge_gateway_name" {
   value = local.edge_gateway_name
 }
@@ -71,4 +64,12 @@ output "creted_virtual_machines" {
 
 output "created_nat_rules" {
   value = local.created_nat_rules
+}
+
+################################################################################
+# This code block outputs information about created FW rules
+################################################################################
+
+output "created_fw_rules" {
+  value = local.created_fw_rules
 }
