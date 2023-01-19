@@ -257,33 +257,33 @@ variable "virtual_machines" {
 
 
 # Note. Map of available 6 public IPs. You can use these names
-# in NAT rules.
+# in NAT rules. Do not change the map's keys here.
 
 
 variable "public_ips" {
   description = "Available public IPs."
   default = {
-    0 = {
+    public-ip-0 = {
       name = "public-ip-0"
       description = ""
     },
-    1 = {
+    public-ip-1 = {
       name = "public-ip-1" 
       description = ""
     },
-    2 = {
+    public-ip-2 = {
       name = "public-ip-2" 
       description = ""
     },
-    3 = {
+    public-ip-3 = {
       name = "public-ip-3" 
       description = ""
     },
-    4 = {
+    public-ip-4 = {
       name = "public-ip-4" 
       description = ""
     },
-    5 = {
+    public-ip-5 = {
       name = "public-ip-5" 
       description = ""
     },
@@ -379,23 +379,72 @@ variable "nat_rules" {
   }  
 }
 
-# Note. This terraform will an create IP set for each NAT rule, 
-# and it will use the NAT key as the `name` and `external_address`
-# or IP address of `external_address_target` as the IP address.
 
-# Note. You can create additional IP sets to be used in firewall rules.
+# Note. You need to create IP sets to be used in firewall rules.
+
 
 variable "ip_sets" {
-  description = "Custom IP sets to create."
+  description = "IP sets to create."
   type = any
   default = {
-    on-premises-networks = {
+    ip-set-on-public-ip-0 = {
+      description = "Public IP 0 - used for SNAT"
+      ip_addresses = []
+      address_target = "public-ip-0"
+    },
+    ip-set-on-public-ip-1 = {
+      description = "Public IP 2 - used for DNAT to app-server-1"
+      ip_addresses = []
+      address_target = "public-ip-1"
+    },
+    ip-set-on-public-ip-2 = {
+      description = "Public IP 2 - used for DNAT to jump-server-1"
+      ip_addresses = []
+      address_target = "public-ip-2"
+    },
+    ip-set-on-public-ip-3 = {
+      description = "Public IP 3"
+      ip_addresses = []
+      address_target = "public-ip-3"
+    },
+    ip-set-on-public-ip-4 = {
+      description = "Public IP 4"
+      ip_addresses = []
+      address_target = "public-ip-4"
+    },
+    ip-set-on-public-ip-5 = {
+      description = "Public IP 5"
+      ip_addresses = []
+      address_target = "public-ip-5"
+    },
+    ip-set-on-premises-networks = {
       description = "On-premises networks"
       ip_addresses = ["172.16.0.0/16",]
+      address_target = ""
     },
   }
 }
 
+# Note. You need to create Static Groups to be used in firewall rules.
+
+variable "security_groups" {
+  description = "Static Groups to create."
+  type = any
+  default = {
+    sg-application-network-1 = {
+      description = "Static Group for application-network-1"
+      address_targets = ["application-network-1"]
+    },
+    sg-db-network-1 = {
+      description = "Static Group for db-network-1"
+      address_targets = ["db-network-1"]
+    },
+    sg-all-routed-networks = {
+      description = "Static Group for all VDC networks"
+      address_targets = ["application-network-1", "db-network-1"]
+    },
+  }
+}
 
 # Note. You can use `vdc_networks`, `nat_rules` (for DNAT) or
 # `ip_sets` keys as sources or destinations here. Terraform 
@@ -413,34 +462,34 @@ variable "firewall_rules" {
   type = any
   default = {
     app-1-egress = {
-      action  = "ALLOW"
-      direction = "OUT"
-      ip_protocol = "IPV4"
-      destinations = []
-      sources = ["application-network-1", "db-network-1"]
-      system_app_ports = []
-      logging = false
-      enabled=true
+        action  = "ALLOW"
+        direction = "OUT"
+        ip_protocol = "IPV4"
+        destinations = []                                          # These refer to IP sets or Static Groups (vdc_networks)
+        sources = ["sg-application-network-1", "sg-db-network-1"]  # These refer to IP sets or Static Groups (vdc_networks)
+        system_app_ports = []
+        logging = false
+        enabled = true
     },
     dnat-to-app-1-ingress = {
-      action  = "ALLOW"
-      direction = "IN"
-      ip_protocol = "IPV4"
-      destinations = ["dnat-to-app-1"]
-      sources = []
-      system_app_ports = ["SSH","HTTPS","ICMP ALL"]
-      logging = false
-      enabled=true
+        action  = "ALLOW"
+        direction = "IN"
+        ip_protocol = "IPV4"
+        destinations = ["ip-set-on-public-ip-1"]                   # These refer to IP sets or Static Groups (vdc_networks)
+        sources = []                                               # These refer to IP sets or Static Groups (vdc_networks)
+        system_app_ports = ["SSH","HTTPS","ICMP ALL"]
+        logging = false
+        enabled = true
     },
     dnat-to-jump-1-ingress = {
-      action  = "DROP"
-      direction = "IN"
-      ip_protocol = "IPV4"
-      destinations = ["dnat-to-jump-1"]
-      sources = []
-      system_app_ports = ["RDP"]
-      logging = false
-      enabled=true
+        action  = "ALLOW"
+        direction = "IN"
+        ip_protocol = "IPV4"
+        destinations = ["ip-set-on-public-ip-2"]                   # These refer to IP sets or Static Groups (vdc_networks)
+        sources = []                                               # These refer to IP sets or Static Groups (vdc_networks)
+        system_app_ports = ["RDP"]
+        logging = false
+        enabled = true
     },
   }
 }

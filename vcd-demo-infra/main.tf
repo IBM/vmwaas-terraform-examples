@@ -42,8 +42,8 @@ locals {
 
 
 locals {
-  public_ips = { for k,v in var.public_ips : v.name => {
-    ip_address = cidrhost("${local.edge_gateway_gateway}/${local.edge_gateway_prefix_length}", k+2)
+  public_ips = { for k,v in var.public_ips : k => {
+    ip_address = cidrhost("${local.edge_gateway_gateway}/${local.edge_gateway_prefix_length}", element(split("public-ip-",k),1)+2)
     description= v.description
     } 
   }
@@ -476,6 +476,8 @@ locals {
 # This code block creates security groups
 ################################################################################
 
+/* ## to be deleted
+
 locals {
   all_org_vdc_routed_networks = {                                 # special group for all routed networks 
     all-org-vdc-routed-networks = {
@@ -501,12 +503,11 @@ resource "vcd_nsxt_security_group" "security_group" {
   edge_gateway_id          = local.edge_gateway_id
   
   #name                     = each.key
-  name                     = var.item_name_prefix == "" ? each.key : "${var.item_name_prefix}-${each.key}"
+  name                     = var.item_name_prefix == "" ? "sg-${each.key}" : "${var.item_name_prefix}-sg-${each.key}"
 
   description              = "Security Group for ${each.value.description}"
   member_org_network_ids   = each.value.member_org_network_ids
 }
-
 
 
 locals {
@@ -517,6 +518,37 @@ locals {
   }
 }
 
+*/ ## to be deleted 
+
+
+
+
+locals {
+  security_groups = { for k,v in var.security_groups : k => {    
+    member_org_network_ids = [ for addrtarget_k in v.address_targets : vcd_network_routed_v2.routed_network[addrtarget_k].id ]
+    org_networks = v.address_targets
+    description = v.description
+    }
+  }
+}
+
+
+resource "vcd_nsxt_security_group" "security_group" {
+  for_each                 = local.security_groups
+
+  org                      = var.vmwaas_org
+  edge_gateway_id          = local.edge_gateway_id
+  
+  name                     = var.item_name_prefix == "" ? each.key : "${var.item_name_prefix}-${each.key}"
+
+  description              = "Security Group for ${each.value.description}"
+  member_org_network_ids   = each.value.member_org_network_ids
+}
+
+locals {
+  created_security_groups = local.security_groups
+}
+
 ################################################################################
 # This code block creates IP sets
 ################################################################################
@@ -525,9 +557,10 @@ locals {
 # Note. Creates IP sets for used public IPs and for the IP sets defined 
 # in the variable, such as on-premises networks.  
 
+/* old to be deleted
 
 locals {
-  public_ip_set = { for k,v in var.nat_rules : k => {
+  public_nat_ip_set = { for k,v in var.nat_rules : k => {
     ip_addresses = [ v.external_address != "" ? v.external_address : local.public_ips[v.external_address_target].ip_address ]
     description = "Public IP of ${v.description}"
     } if v.rule_type == "SNAT" || v.rule_type == "DNAT"
@@ -537,7 +570,7 @@ locals {
     description = v.description
     }
   }
-  ip_sets = merge(local.public_ip_set,local.other_ip_set)
+  ip_sets = merge(local.public_nat_ip_set,local.other_ip_set)
 }
 
 
@@ -548,6 +581,31 @@ resource "vcd_nsxt_ip_set" "ip_set" {
   edge_gateway_id          = local.edge_gateway_id
 
   #name                     = each.key
+  name                     = var.item_name_prefix == "" ? "ipset-${each.key}" : "${var.item_name_prefix}-ipset-${each.key}"
+
+  description              = each.value.description
+
+  ip_addresses             = each.value.ip_addresses
+}
+
+*/ 
+
+
+locals {
+  ip_sets = { for k,v in var.ip_sets : k => {
+    ip_addresses = v.ip_addresses == [] ? [ for addrtarget_k,addrtarget_v in local.public_ips : addrtarget_v.ip_address if addrtarget_k == v.address_target ] : v.ip_addresses
+    description = v.description
+    }
+  }
+}
+
+
+resource "vcd_nsxt_ip_set" "ip_set" {
+  for_each                 = local.ip_sets
+
+  org                      = var.vmwaas_org
+  edge_gateway_id          = local.edge_gateway_id
+
   name                     = var.item_name_prefix == "" ? each.key : "${var.item_name_prefix}-${each.key}"
 
   description              = each.value.description
@@ -556,13 +614,13 @@ resource "vcd_nsxt_ip_set" "ip_set" {
 }
 
 
-
 ################################################################################
 # This code block collects required Application Port Profile IDs 
 ################################################################################
 
 # Note. Collects system Application Port Profile IDs for profles used in 
 # specified FW rules. 
+
 
 locals {
   system_app_ports_list_nat = compact([for k,v in var.nat_rules : v.app_port_profile if v.rule_type=="DNAT"])
@@ -587,10 +645,15 @@ data "vcd_nsxt_app_port_profile" "system" {
 # This code block creates firewall rules
 ################################################################################
 
+/* temprorarily disabled....fix
+
+
 # Note. You can use `vdc_networks`, `nat_rules` (for DNAT) or
 # `ip_sets` keys as sources or destinations here. Terraform 
 # will pick the IP address of the specific resource and 
 # use that in the actual rule.
+
+*/
 
 # Note. Use "ALLOW or "DROP".
 
@@ -606,7 +669,6 @@ resource "vcd_nsxt_firewall" "firewall" {
     content {
       action               = rule.value.action
  
-      #name                 = rule.key
       name                 = var.item_name_prefix == "" ? rule.key : "${var.item_name_prefix}-${rule.key}"
 
       enabled              = rule.value.enabled
@@ -628,14 +690,6 @@ resource "vcd_nsxt_firewall" "firewall" {
   }
 }
 
-
-/*
-locals {
-  created_fw_rules = vcd_nsxt_firewall.firewall
-  }
-*/
-
-#/*
 
 locals {
   created_fw_rules = {
@@ -664,4 +718,5 @@ locals {
   }
 }
 
-#/*
+
+#*/

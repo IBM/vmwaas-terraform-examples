@@ -58,6 +58,10 @@ output "created_virtual_machines" {
   value = local.virtual_machines
 }
 
+
+
+/*
+
 ################################################################################
 # This code block outputs information about created NAT rules
 ################################################################################
@@ -83,7 +87,7 @@ output "created_static_groups" {
 ################################################################################
 # This code block outputs information about created FW rules
 ################################################################################
-/*
+
 
 output "created_fw_rules" {
   value = local.created_fw_rules
