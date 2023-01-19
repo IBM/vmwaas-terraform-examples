@@ -47,3 +47,7 @@ override.tf.json
 *.bkp
 
 *.sh-not
+
+###
+
+**/vcd-demo-test/*
