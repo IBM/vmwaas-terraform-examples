@@ -312,7 +312,7 @@ ip_sets = {
       address_target = "public-ip-0"
     },
     ip-set-on-public-ip-1 = {
-      description = "Public IP 2 - used for DNAT to app-server-1"
+      description = "Public IP 1 - used for DNAT to app-server-1"
       ip_addresses = []
       address_target = "public-ip-1"
     },
