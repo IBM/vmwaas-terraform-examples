@@ -1,3 +1,11 @@
+################################################################################
+# This code block outputs information about catalogs
+################################################################################
+
+
+output "catalog_templates" {
+  value = local.catalog_templates
+}
 
 ################################################################################
 # This code block outputs information about vdc and its edge gw
@@ -72,7 +80,7 @@ output "created_nat_rules" {
 ################################################################################
 
 output "created_ip_sets" {
-  value = local.ip_sets
+  value = local.created_ip_sets
 }
 
 
@@ -83,6 +91,7 @@ output "created_static_groups" {
 ################################################################################
 # This code block outputs information about created FW rules
 ################################################################################
+
 
 output "created_fw_rules" {
   value = local.created_fw_rules

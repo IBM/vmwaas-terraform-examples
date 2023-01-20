@@ -18,7 +18,8 @@ vmwaas_vdc_name = "put-your-vdc-name-here"
 
 vmwaas_user = "put-your-username-here"
 vmwaas_password = "put-your-password-here"
-#vmwaas_api_token = ""                                  # Note. This will be supported in the future.
+#vmwaas_api_token = ""
+
 
 
 # Note. Use a common name prefix for each item. 
@@ -197,33 +198,33 @@ virtual_machines = {
 
 
 # Note. Map of available 6 public IPs. You can use these names
-# in NAT rules.
+# in NAT rules. Do not change the map's keys here.
 
 
 public_ips = {
-    0 = {
-        name = "public-ip-0"
-        description = "SNAT rule to application-network-1 and application-network-2"
+    public-ip-0 = {
+      name = "public-ip-0"
+      description = ""
     },
-    1 = {
-        name = "public-ip-1" 
-        description = "DNAT rule to app-server-1"
+    public-ip-1 = {
+      name = "public-ip-1" 
+      description = ""
     },
-    2 = {
-        name = "public-ip-2" 
-        description = "DNAT rule to jump-server-1"
+    public-ip-2 = {
+      name = "public-ip-2" 
+      description = ""
     },
-    3 = {
-        name = "public-ip-3" 
-        description = ""
+    public-ip-3 = {
+      name = "public-ip-3" 
+      description = ""
     },
-    4 = {
-        name = "public-ip-4" 
-        description = ""
+    public-ip-4 = {
+      name = "public-ip-4" 
+      description = ""
     },
-    5 = {
-        name = "public-ip-5" 
-        description = ""
+    public-ip-5 = {
+      name = "public-ip-5" 
+      description = ""
     },
 }
 
@@ -310,20 +311,69 @@ nat_rules = {
     },  
   }  
 
-# Note. You can create IP sets to be used in firewall rules.
+
+# Note. You need to create IP sets to be used in firewall rules.
+# You can use the `public_ips`keys here as address_targets,
+# you you can define `ip_addresses`.
 
 ip_sets = {
-    on-premises-networks = {
+    ip-set-on-public-ip-0 = {
+      description = "Public IP 0 - used for SNAT"
+      ip_addresses = []
+      address_target = "public-ip-0"
+    },
+    ip-set-on-public-ip-1 = {
+      description = "Public IP 2 - used for DNAT to app-server-1"
+      ip_addresses = []
+      address_target = "public-ip-1"
+    },
+    ip-set-on-public-ip-2 = {
+      description = "Public IP 2 - used for DNAT to jump-server-1"
+      ip_addresses = []
+      address_target = "public-ip-2"
+    },
+    ip-set-on-public-ip-3 = {
+      description = "Public IP 3"
+      ip_addresses = []
+      address_target = "public-ip-3"
+    },
+    ip-set-on-public-ip-4 = {
+      description = "Public IP 4"
+      ip_addresses = []
+      address_target = "public-ip-4"
+    },
+    ip-set-on-public-ip-5 = {
+      description = "Public IP 5"
+      ip_addresses = []
+      address_target = "public-ip-5"
+    },
+    ip-set-on-premises-networks = {
       description = "On-premises networks"
       ip_addresses = ["172.16.0.0/16",]
+      address_target = ""
     },
 }
 
 
-# Note. You can use `vdc_networks`, `nat_rules` (for DNAT) or
-# `ip_sets` keys as sources or destinations here. Terraform 
-# will pick the IP address of the specific resource and 
-# use that in the actual rule.
+
+# Note. You need to create Static Groups to be used in firewall rules.
+# You can use `vdc_networks` as keys here.
+
+security_groups = {
+    sg-application-network-1 = {
+      description = "Static Group for application-network-1"
+      address_targets = ["application-network-1"]
+    },
+    sg-db-network-1 = {
+      description = "Static Group for db-network-1"
+      address_targets = ["db-network-1"]
+    },
+    sg-all-routed-networks = {
+      description = "Static Group for all VDC networks"
+      address_targets = ["application-network-1", "db-network-1"]
+    },
+}
+
 
 # Note. Use "ALLOW or "DROP".
 
@@ -336,29 +386,33 @@ firewall_rules = {
         action  = "ALLOW"
         direction = "OUT"
         ip_protocol = "IPV4"
-        destinations = []
-        sources = ["application-network-1", "db-network-1"]
+        destinations = []                                          # These refer to IP sets (ip_sets or nat_rules) or Static Groups (vdc_networks)
+        sources = ["sg-application-network-1", "sg-db-network-1"]  # These refer to IP sets (ip_sets or nat_rules) or Static Groups (vdc_networks)
         system_app_ports = []
         logging = false
+        enabled = true
     },
     dnat-to-app-1-ingress = {
         action  = "ALLOW"
         direction = "IN"
         ip_protocol = "IPV4"
-        destinations = ["dnat-to-app-1"]
-        sources = []
+        destinations = ["ip-set-on-public-ip-1"]                   # These refer to IP sets (ip_sets or nat_rules) or Static Groups (vdc_networks)
+        sources = []                                               # These refer to IP sets (ip_sets or nat_rules) or Static Groups (vdc_networks)
         system_app_ports = ["SSH","HTTPS","ICMP ALL"]
         logging = false
+        enabled = true
     },
     dnat-to-jump-1-ingress = {
         action  = "ALLOW"
         direction = "IN"
         ip_protocol = "IPV4"
-        destinations = ["dnat-to-jump-1"]
-        sources = []
+        destinations = ["ip-set-on-public-ip-2"]                   # These refer to IP sets (ip_sets or nat_rules) or Static Groups (vdc_networks)
+        sources = []                                               # These refer to IP sets (ip_sets or nat_rules) or Static Groups (vdc_networks)
         system_app_ports = ["RDP"]
         logging = false
+        enabled = true
     },
 }
+
 
 ``` 
