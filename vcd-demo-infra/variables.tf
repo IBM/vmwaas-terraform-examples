@@ -381,6 +381,8 @@ variable "nat_rules" {
 
 
 # Note. You need to create IP sets to be used in firewall rules.
+# You can use the `public_ips`keys here as address_targets,
+# you you can define `ip_addresses`.
 
 
 variable "ip_sets" {
@@ -426,6 +428,7 @@ variable "ip_sets" {
 }
 
 # Note. You need to create Static Groups to be used in firewall rules.
+# You can use `vdc_networks` as keys here.
 
 variable "security_groups" {
   description = "Static Groups to create."
