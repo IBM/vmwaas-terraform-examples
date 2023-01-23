@@ -12,11 +12,12 @@ terraform {
 }
 
 provider "vcd" {
-  # user     = var.vmwaas_user
-  # password = var.vmwaas_password
-  auth_type = "api_token"
-  api_token = var.vmwaas_api_token
+  user     = var.vmwaas_user
+  password = var.vmwaas_password
+  #auth_type = "api_token"
+  #api_token = var.vmwaas_api_token
   org       = var.vmwaas_org
   url       = var.vmwaas_url
   vdc       = var.vmwaas_vdc_name
 }
+

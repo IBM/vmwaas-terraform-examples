@@ -11,10 +11,9 @@ variable "vmwaas_password" {
 }
 
 variable "vmwaas_api_token" {
-  description = "vCloud Director API Token for user"
+  description = "vCloud Director API Token for user."
   default = ""
 }
-
 
 variable "vmwaas_org" {
   description = "vCloud Director organization name/id."
