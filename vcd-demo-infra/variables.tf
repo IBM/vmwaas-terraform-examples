@@ -380,8 +380,9 @@ variable "nat_rules" {
 
 
 # Note. You need to create IP sets to be used in firewall rules.
-# You can use the `public_ips`keys here as address_targets,
-# you you can define `ip_addresses`.
+# You can use the `public_ips` keys here as address_targets,
+# but you can define IP sets using real IP addresses using a
+# list `ip_addresses`.
 
 
 variable "ip_sets" {
