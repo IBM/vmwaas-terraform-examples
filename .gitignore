@@ -51,5 +51,7 @@ override.tf.json
 ###
 
 **/vcd-demo-test/*
+**/vcd-demo-infra-test/*
+
 .$diagrams.drawio.bkp
 terraform.tfvars-test*
