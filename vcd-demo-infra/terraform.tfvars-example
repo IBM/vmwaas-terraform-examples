@@ -78,7 +78,7 @@ vdc_networks = {
 
 
 # Note. Create virtual machines inside your virtual data center.
-# You can define each one idividually and attach multiple networks
+# You can define each one individually and attach multiple networks
 # and disks. Individual disks are created for each additional disk.
 
 # Note. Check the storage profile names and apply to your VMs / disks.
