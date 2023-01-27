@@ -321,6 +321,9 @@ resource "vcd_nsxt_nat_rule" "snat_rules" {
 
   firewall_match           = "MATCH_INTERNAL_ADDRESS"
 
+  priority                 = each.value.priority
+  enabled                  = each.value.enabled
+
   external_address         = each.value.external_address != "" ? each.value.external_address : local.public_ips[each.value.external_address_target].ip_address
   internal_address         = each.value.internal_address != "" ? each.value.internal_address : "${cidrhost("${vcd_network_routed_v2.routed_network[each.value.internal_address_target].gateway}/${vcd_network_routed_v2.routed_network[each.value.internal_address_target].prefix_length}", 0)}/${vcd_network_routed_v2.routed_network[each.value.internal_address_target].prefix_length}"
 
@@ -343,6 +346,9 @@ resource "vcd_nsxt_nat_rule" "dnat_rules" {
   description              = each.value.description
 
   firewall_match           = "MATCH_EXTERNAL_ADDRESS"
+
+  priority                 = each.value.priority
+  enabled                  = each.value.enabled
 
   external_address         = each.value.external_address != "" ? each.value.external_address : local.public_ips[each.value.external_address_target].ip_address
   internal_address         = each.value.internal_address != "" ? each.value.internal_address : [for k, v in vcd_vm.virtual_machines[each.value.internal_address_target].network : v.ip if v.is_primary == true ][0]
@@ -368,6 +374,9 @@ resource "vcd_nsxt_nat_rule" "no_snat_rules" {
 
   firewall_match           = "MATCH_INTERNAL_ADDRESS"
 
+  priority                 = each.value.priority
+  enabled                  = each.value.enabled
+
   internal_address         = each.value.internal_address != "" ? each.value.internal_address : "${cidrhost("${vcd_network_routed_v2.routed_network[each.value.internal_address_target].gateway}/${vcd_network_routed_v2.routed_network[each.value.internal_address_target].prefix_length}", 0)}/${vcd_network_routed_v2.routed_network[each.value.internal_address_target].prefix_length}"
   snat_destination_address = each.value.snat_destination_address
 
@@ -390,6 +399,9 @@ resource "vcd_nsxt_nat_rule" "no_dnat_rules" {
 
   firewall_match           = "MATCH_EXTERNAL_ADDRESS"
 
+  priority                 = each.value.priority
+  enabled                  = each.value.enabled
+
   external_address         = each.value.external_address != "" ? each.value.external_address : local.public_ips[each.value.external_address_target].ip_address
 
   dnat_external_port       = each.value.dnat_external_port
@@ -409,6 +421,8 @@ locals {
     internal_address = v.internal_address
     snat_destination_address = v.snat_destination_address
     dnat_external_port = v.dnat_external_port
+    priority = v.priority
+    enabled = v.enabled
     }  
   }
   created_dnat_rules = { for k,v in vcd_nsxt_nat_rule.dnat_rules : k => {
@@ -418,6 +432,8 @@ locals {
     internal_address = v.internal_address
     snat_destination_address = v.snat_destination_address
     dnat_external_port = v.dnat_external_port
+    priority = v.priority
+    enabled = v.enabled
     }  
   }
   created_no_snat_rules = { for k,v in vcd_nsxt_nat_rule.no_snat_rules : k => {
@@ -427,6 +443,8 @@ locals {
     internal_address = v.internal_address
     snat_destination_address = v.snat_destination_address
     dnat_external_port = v.dnat_external_port
+    priority = v.priority
+    enabled = v.enabled
     }  
   }
   created_no_dnat_rules = { for k,v in vcd_nsxt_nat_rule.no_dnat_rules : k => {
@@ -436,6 +454,8 @@ locals {
     internal_address = v.internal_address
     snat_destination_address = v.snat_destination_address
     dnat_external_port = v.dnat_external_port
+    priority = v.priority
+    enabled = v.enabled
     }  
   }
 

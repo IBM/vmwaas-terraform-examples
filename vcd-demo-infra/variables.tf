@@ -307,6 +307,7 @@ variable "nat_rules" {
   description = "NAT rules to create."
   type = any
   default = {
+  /* examples only for NO_SNAT rule
     no-snat-to-ibm-cloud-166-9 = {
       rule_type   = "NO_SNAT"
       description = "NO_SNAT rule to application-network-1"
@@ -317,6 +318,7 @@ variable "nat_rules" {
       snat_destination_address = "166.9.0.0/16"
       logging = false
       priority = 10
+      enabled = true
     },
     no-snat-to-ibm-cloud-161-26 = {
       rule_type   = "NO_SNAT"
@@ -328,7 +330,9 @@ variable "nat_rules" {
       snat_destination_address = "161.26.0.0/16"
       logging = false
       priority = 10
+      enabled = true
     },
+*/
     dnat-to-app-1 = {
       rule_type   = "DNAT"
       description = "DNAT rule to app-server-1"
@@ -340,6 +344,7 @@ variable "nat_rules" {
       app_port_profile = ""
       logging = false
       priority = 90
+      enabled = true
     },
     dnat-to-jump-1 = {
       rule_type   = "DNAT"
@@ -352,6 +357,7 @@ variable "nat_rules" {
       app_port_profile = "RDP"
       logging = false
       priority = 90
+      enabled = true
     },
     snat-to-internet-1 = {
       rule_type = "SNAT"
@@ -363,6 +369,7 @@ variable "nat_rules" {
       snat_destination_address = ""
       logging = false
       priority = 100
+      enabled = true
     },    
     snat-to-internet-2 = {
       rule_type = "SNAT"
@@ -374,6 +381,7 @@ variable "nat_rules" {
       snat_destination_address = ""
       logging = false
       priority = 100
+      enabled = true
     },  
   }  
 }
