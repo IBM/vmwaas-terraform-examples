@@ -51,7 +51,7 @@ variable "vmwaas_allow_unverified_ssl" {
 
 variable "item_name_prefix" {
   description = "Add a prefix for instance names."
-  default = "bryan"
+  default = "test"
 }
 
 
@@ -69,7 +69,7 @@ variable "terraform_created_random_passwords" {
 
 
 variable "dns_servers" {
-  default = ["161.26.1.10","161.26.1.11"] 
+  default = ["161.26.0.10","161.26.0.11"] 
 }
 
 

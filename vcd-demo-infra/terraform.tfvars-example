@@ -18,7 +18,7 @@ item_name_prefix = "demo"
 # Note. IBM Cloud DNS servers listed here. 
 # You may also use your own here. 
 
-dns_servers = ["161.26.1.10","161.26.1.11"] 
+dns_servers = ["161.26.0.10","161.26.0.11"] 
 
 
 # Note. Create virtual data center networks of type `routed` or
