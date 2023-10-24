@@ -154,7 +154,7 @@ variable "virtual_machines" {
       cpus            = 2
       cpu_hot_add_enabled = true
       memory_hot_add_enabled = true
-      storage_profile = "2 IOPS/GB"
+      storage_profile = ""
       networks = {
         0 = {
           name = "application-network-1"
@@ -178,7 +178,7 @@ variable "virtual_machines" {
           bus_type = "SCSI"
           bus_sub_type = "VirtualSCSI"
           bus_number = 1
-          storage_profile = "2 IOPS/GB"
+          storage_profile = ""
         }
       }
     },
@@ -191,7 +191,7 @@ variable "virtual_machines" {
       cpus          = 2
       cpu_hot_add_enabled = true
       memory_hot_add_enabled = true
-      storage_profile = "2 IOPS/GB"
+      storage_profile = ""
       networks = {
         0 = {
           name = "application-network-1"
