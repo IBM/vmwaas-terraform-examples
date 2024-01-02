@@ -157,7 +157,7 @@ locals {
   virtual_machines_disks_map = { for k,v in local.virtual_machines_disks_list : "${v.virtual_machine}-disk-${v.disk_key}-${v.disk.name}" => { 
     virtual_machine = "${v.virtual_machine}"
     disk = v.disk
-    unit_number = v.disk_key
+    #unit_number = v.disk_key
     }
   }
 }
@@ -226,9 +226,6 @@ resource "vcd_vm" "virtual_machines" {
 
   name                   = var.item_name_prefix == "" ? each.key : "${var.item_name_prefix}-${each.key}"
 
-  #catalog_name           = each.value.image.catalog_name       # deprecated
-  #template_name          = each.value.image.template_name      # deprecated
-
   vapp_template_id       = module.catalog_info[each.value.image.catalog_name].catalog_templates[each.value.image.template_name].id
 
   memory                 = each.value.memory
@@ -256,7 +253,7 @@ resource "vcd_vm" "virtual_machines" {
     content {
       name        = vcd_independent_disk.virtual_machines_disk["${disk.key}"].name
       bus_number  = disk.value.disk.bus_number
-      unit_number = disk.value.unit_number 
+      unit_number = disk.value.disk.unit_number 
     }
   }
 
@@ -265,6 +262,7 @@ resource "vcd_vm" "virtual_machines" {
     admin_password                      = var.terraform_created_random_passwords == true ? random_string.admin_password[each.key].result : ""
     must_change_password_on_first_login = false    
   }
+
 }
 
 locals {

@@ -170,6 +170,7 @@ variable "virtual_machines" {
           bus_type = "SCSI"
           bus_sub_type = "VirtualSCSI"
           bus_number = 1
+          unit_number = 0
           storage_profile = ""
         },
         1 = {
@@ -178,6 +179,7 @@ variable "virtual_machines" {
           bus_type = "SCSI"
           bus_sub_type = "VirtualSCSI"
           bus_number = 1
+          unit_number = 1
           storage_profile = ""
         }
       }
@@ -207,6 +209,7 @@ variable "virtual_machines" {
           bus_type = "SCSI"
           bus_sub_type = "VirtualSCSI"
           bus_number = 1
+          unit_number = 0
           storage_profile = ""
         },
       }

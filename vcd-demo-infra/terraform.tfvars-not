@@ -1,19 +1,24 @@
 # Note. Variable values to access your Director instance. Use the Director portal
 # to figure our your values here.
 
-vmwaas_url = "put-your-director-url-here" # for example "https://abcxyz.us-south.vmware.cloud.ibm.com/api"
-vmwaas_org = "put-your-org-id-here"
-vmwaas_vdc_name = "put-your-vdc-name-here"
+#vmwaas_url = "https://dirw026.us-south.vmware.cloud.ibm.com/api"
+#vmwaas_org = "f37f6631-e6c4-427e-b277-9fec446b88fb"
+#vmwaas_vdc_name = "vdc-1k"
+#vmwaas_vdc_name = "vdc-sami"
 
-vmwaas_user = "put-your-username-here"
-vmwaas_password = "put-your-password-here"
-#vmwaas_api_token = ""
 
+vmwaas_url = "https://dirw002.eu-de.vmware.cloud.ibm.com/api"
+vmwaas_org = "8db98de2-7735-41f1-a487-64fcaefde250"
+vmwaas_vdc_name = "vdc-sami"
+
+
+#vmwaas_user = "sami.kuronen@fi.ibm.com"
+vmwaas_api_token = "PnKZKD95YC4xK5bXRRuXLvUPqYDAOQDu"
 
 
 # Note. Use a common name prefix for each item. 
 
-item_name_prefix = "demo"
+item_name_prefix = "sami-demo"
 
 # Note. IBM Cloud DNS servers listed here. 
 # You may also use your own here. 
@@ -78,17 +83,14 @@ vdc_networks = {
 
 
 # Note. Create virtual machines inside your virtual data center.
-# You can define each one individually and attach multiple networks
+# You can define each one idividually and attach multiple networks
 # and disks. Individual disks are created for each additional disk.
 
 # Note. Check the storage profile names and apply to your VMs / disks.
 # If left empty, default profile is used.
 
-#cpu_hot_add_enabled
-#memory_hot_add_enabled
-
-
 virtual_machines = {
+#/*
     app-server-1 = {
         image = {
             catalog_name  = "Public Catalog"
@@ -114,7 +116,6 @@ virtual_machines = {
                 bus_type = "SCSI"
                 bus_sub_type = "VirtualSCSI"
                 bus_number = 1
-                unit_number = 0
                 storage_profile = ""
             },
         }
@@ -150,7 +151,6 @@ virtual_machines = {
                 bus_type = "SCSI"
                 bus_sub_type = "VirtualSCSI"
                 bus_number = 1
-                unit_number = 0
                 storage_profile = ""
             },
             1 = {
@@ -159,11 +159,11 @@ virtual_machines = {
                 bus_type = "SCSI"
                 bus_sub_type = "VirtualSCSI"
                 bus_number = 1
-                unit_number = 1
                 storage_profile = ""
             },
         }    
     },
+#/*
     jump-server-1 = {
         image = {
             catalog_name  = "Public Catalog"
@@ -184,13 +184,14 @@ virtual_machines = {
         },
         disks = {}
     },
+#*/
 }
 
 
 
 
 # Note. Map of available 6 public IPs. You can use these names
-# in NAT rules. Do not change the map's keys here.
+# in NAT rules.
 
 
 public_ips = {
@@ -233,7 +234,6 @@ public_ips = {
 # profiles."
 
 nat_rules = {
-/* examples only for NO_SNAT rule
     no-snat-to-ibm-cloud-166-9 = {
         rule_type   = "NO_SNAT"
         description = "NO_SNAT rule to application-network-1"
@@ -244,7 +244,6 @@ nat_rules = {
         snat_destination_address = "166.9.0.0/16"
         logging = false
         priority = 10
-        enabled = true
     },
     no-snat-to-ibm-cloud-161-26 = {
         rule_type   = "NO_SNAT"
@@ -256,9 +255,8 @@ nat_rules = {
         snat_destination_address = "161.26.0.0/16"
         logging = false
         priority = 10
-        enabled = true
     },
-*/
+#/*
     dnat-to-app-1 = {
         rule_type   = "DNAT"
         description = "DNAT rule to app-server-1"
@@ -270,8 +268,8 @@ nat_rules = {
         app_port_profile = ""
         logging = false
         priority = 90
-        enabled = true
     },
+#*/
     dnat-to-jump-1 = {
         rule_type   = "DNAT"
         description = "DNAT rule to jump-server-1"
@@ -283,7 +281,6 @@ nat_rules = {
         app_port_profile = ""
         logging = false
         priority = 90
-        enabled = true
     },
     snat-to-internet-1 = {
         rule_type = "SNAT"
@@ -295,7 +292,6 @@ nat_rules = {
         snat_destination_address = ""
         logging = false
         priority = 100
-        enabled = true
     },    
     snat-to-internet-2 = {
         rule_type = "SNAT"
@@ -307,7 +303,6 @@ nat_rules = {
         snat_destination_address = ""
         logging = false
         priority = 100
-        enabled = true
     },  
   }  
 
@@ -355,8 +350,6 @@ ip_sets = {
     },
 }
 
-
-
 # Note. You need to create Static Groups to be used in firewall rules.
 # You can use `vdc_networks` as keys here.
 
@@ -380,7 +373,6 @@ security_groups = {
 
 # Note. Use Director UI to get the name for the Application
 # profiles."
-
 
 firewall_rules = {
     app-1-egress = {
@@ -414,3 +406,4 @@ firewall_rules = {
         enabled = true
     },
 }
+

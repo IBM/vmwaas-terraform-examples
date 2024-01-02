@@ -1,13 +1,14 @@
 # Note. Variable values to access your Director instance. Use the Director portal
 # to figure our your values here.
 
-vmwaas_url = "put-your-director-url-here" # for example "https://abcxyz.us-south.vmware.cloud.ibm.com/api"
-vmwaas_org = "put-your-org-id-here"
-vmwaas_vdc_name = "put-your-vdc-name-here"
 
-vmwaas_user = "put-your-username-here"
-vmwaas_password = "put-your-password-here"
-#vmwaas_api_token = ""
+vmwaas_url = "https://dirw002.eu-de.vmware.cloud.ibm.com/api"
+vmwaas_org = "8db98de2-7735-41f1-a487-64fcaefde250"
+vmwaas_vdc_name = "vdc-sami"
+
+
+#vmwaas_user = "sami.kuronen@fi.ibm.com"
+vmwaas_api_token = "PnKZKD95YC4xK5bXRRuXLvUPqYDAOQDu"
 
 
 
@@ -92,7 +93,7 @@ virtual_machines = {
     app-server-1 = {
         image = {
             catalog_name  = "Public Catalog"
-            template_name = "RedHat-8-Template-Official"
+            template_name = "CentOS-7-Template-Official"
         }
         memory          = 8192
         cpus            = 2
@@ -119,6 +120,7 @@ virtual_machines = {
             },
         }
     },
+/*
     db-server-1 = {
         image = {
             catalog_name  = "Public Catalog"
@@ -184,6 +186,7 @@ virtual_machines = {
         },
         disks = {}
     },
+*/
 }
 
 
@@ -258,7 +261,6 @@ nat_rules = {
         priority = 10
         enabled = true
     },
-*/
     dnat-to-app-1 = {
         rule_type   = "DNAT"
         description = "DNAT rule to app-server-1"
@@ -308,7 +310,21 @@ nat_rules = {
         logging = false
         priority = 100
         enabled = true
-    },  
+    },
+*/
+    dnat-to-app-1 = {
+        rule_type   = "DNAT"
+        description = "DNAT rule to app-server-1"
+        external_address_target = "public-ip-1"
+        external_address = "" 
+        internal_address_target = "app-server-1"
+        internal_address = ""
+        dnat_external_port = ""
+        app_port_profile = ""
+        logging = false
+        priority = 90
+        enabled = true
+    },
   }  
 
 
