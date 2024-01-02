@@ -48,6 +48,8 @@ override.tf.json
 
 *.sh-not
 
+
+
 ###
 
 **/vcd-demo-test/*
@@ -55,7 +57,7 @@ override.tf.json
 **/vcd-demo-infra-mantaray/*
 **/vcd-demo-infra-testing/*
 
-
-
 .$diagrams.drawio.bkp
 terraform.tfvars-test*
+terraform.tfvars-not
+terraform.tfvars-not*
