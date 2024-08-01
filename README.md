@@ -1,6 +1,6 @@
-# IBM Cloud® for VCF as a Service - Terraform Examples
+# VCF as a Service - Terraform Examples
 
-IBM Cloud® for VCF as a Service is a managed VMware service which delivers VMware Cloud Director platform running on dedicated IBM Cloud® Bare Metal Servers. This repository includes terraform examples for deploying various examples for VCF as a Service - single tenant instance.
+VCF as a Service in IBM Cloud® is a managed VMware service which delivers VMware Cloud Director platform running on dedicated IBM Cloud® Bare Metal Servers. This repository includes terraform examples for deploying various examples for VCF as a Service - single tenant instance.
 
 ## Getting API end points and virtual data center details
 
