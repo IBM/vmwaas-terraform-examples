@@ -1,10 +1,10 @@
-# IBM Cloud® for VMware as a Service - Terraform Examples
+# IBM Cloud® for VCF as a Service - Terraform Examples
 
-IBM Cloud® for VMware as a Service is a managed VMware service which delivers VMware Cloud Director platform running on dedicated IBM Cloud® Bare Metal Servers. This repository includes terraform examples for deploying various examples for VMware as a Service - single tenant instance.
+IBM Cloud® for VCF as a Service is a managed VMware service which delivers VMware Cloud Director platform running on dedicated IBM Cloud® Bare Metal Servers. This repository includes terraform examples for deploying various examples for VCF as a Service - single tenant instance.
 
 ## Getting API end points and virtual data center details
 
-Use the [IBM Cloud Console](http://cloud.ibm.com/vmware) to create your VMware as a Service - single tenant instance and one or more virtual data centers on it. Once deployed, you can collect the API details and virtual data center IDs from the Console, or you can alternatively use the attached `vmwaas.sh` shell script. It will collect these values using VMware as a Service API.
+Use the [IBM Cloud Console](http://cloud.ibm.com/vmware) to create your VCF as a Service - single tenant instance and one or more virtual data centers on it. Once deployed, you can collect the API details and virtual data center IDs from the Console, or you can alternatively use the attached `vmwaas.sh` shell script. It will collect these values using VCF as a Service API.
 
 Configure your region and API key with:
 
