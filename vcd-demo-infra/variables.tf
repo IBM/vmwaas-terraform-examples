@@ -508,3 +508,9 @@ variable "firewall_rules" {
   }
 }
 
+
+
+variable "public_ip_space_name" {
+  description = "Public IP space name."
+}
+

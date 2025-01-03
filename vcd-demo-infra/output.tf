@@ -20,6 +20,8 @@ output "edge_gateway_name" {
   value = local.edge_gateway_name
 }
 
+/*
+
 output "edge_gateway_primary_ip" {
   value = local.edge_gateway_primary_ip
 }
@@ -40,6 +42,9 @@ output "edge_gateway_allocated_ips_end_address" {
   value = local.edge_gateway_allocated_ips_end_address
 }
 
+*/
+
+
 output "edge_gateway_owner_id" {
   value = data.vcd_nsxt_edgegateway.edge
 }
@@ -48,6 +53,7 @@ output "edge_gateway_owner_id" {
 output "public_ips" {
   value=local.public_ips 
 }
+
 
 ################################################################################
 # This code block outputs information about created vdc networks
@@ -65,6 +71,11 @@ output "created_virtual_machines" {
   sensitive = false
   value = local.virtual_machines
 }
+
+
+
+/*
+
 
 ################################################################################
 # This code block outputs information about created NAT rules
@@ -96,3 +107,5 @@ output "created_static_groups" {
 output "created_fw_rules" {
   value = local.created_fw_rules
 }
+
+*/

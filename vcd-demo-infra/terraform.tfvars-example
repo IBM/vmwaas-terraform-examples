@@ -9,6 +9,7 @@ vmwaas_user = "put-your-username-here"
 vmwaas_password = "put-your-password-here"
 #vmwaas_api_token = ""
 
+public_ip_space_name = "put-your-ip-space-name-here"
 
 
 # Note. Use a common name prefix for each item. 

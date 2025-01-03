@@ -3,6 +3,9 @@
 # This code block gets information about vdc and its edge gw
 ################################################################################
 
+data "vcd_org" "org" {
+  name = var.vmwaas_org
+}
 
 data "vcd_resource_list" "list_of_vdcs" {
   name =  "list_of_vdcs"
@@ -24,31 +27,16 @@ data "vcd_resource_list" "list_of_vdc_edges" {
 data "vcd_nsxt_edgegateway" "edge" {
   #name = var.vmwaas_edge_gateway_name
   name = data.vcd_resource_list.list_of_vdc_edges.list[0]
-  #vdc = var.vmwaas_vdc_name
   owner_id = data.vcd_org_vdc.org_vdc.id  
 }
+
 
 
 
 locals {
   edge_gateway_name = data.vcd_nsxt_edgegateway.edge.name
   edge_gateway_id = data.vcd_nsxt_edgegateway.edge.id
-  edge_gateway_primary_ip = data.vcd_nsxt_edgegateway.edge.primary_ip
-  edge_gateway_prefix_length = tolist(data.vcd_nsxt_edgegateway.edge.subnet)[0].prefix_length
-  edge_gateway_gateway = tolist(data.vcd_nsxt_edgegateway.edge.subnet)[0].gateway
-  edge_gateway_allocated_ips_start_address = tolist(tolist(data.vcd_nsxt_edgegateway.edge.subnet)[0].allocated_ips)[0].start_address
-  edge_gateway_allocated_ips_end_address = tolist(tolist(data.vcd_nsxt_edgegateway.edge.subnet)[0].allocated_ips)[0].end_address  
 }
-
-
-locals {
-  public_ips = { for k,v in var.public_ips : k => {
-    ip_address = cidrhost("${local.edge_gateway_gateway}/${local.edge_gateway_prefix_length}", element(split("public-ip-",k),1)+2)
-    description= v.description
-    } 
-  }
-}
-
 
 
 
@@ -138,6 +126,39 @@ locals {
   }
   created_vdc_networks = merge(local.created_vdc_networks_routed,local.created_vdc_networks_isolated)
 }
+
+
+################################################################################
+# This code block allocates public IPs - floating IPs
+################################################################################
+
+
+data "vcd_ip_space" "ip_space" {
+  name        = var.public_ip_space_name
+}
+
+resource "vcd_ip_space_ip_allocation" "public_floating_ip" {
+  for_each    = var.public_ips
+
+  org_id      = data.vcd_org.org.id
+  ip_space_id = data.vcd_ip_space.ip_space.id
+  type        = "FLOATING_IP"
+
+  #usage_state = "USED_MANUAL"
+  #description = "manually used floating IP"
+}
+
+
+locals {
+  public_ips = { for k,v in var.public_ips : k => {
+    ip_address = vcd_ip_space_ip_allocation.public_floating_ip[k].ip_address
+    description= v.description
+    } 
+  }
+}
+
+
+
 
 
 ################################################################################
@@ -322,13 +343,15 @@ resource "vcd_nsxt_nat_rule" "snat_rules" {
   priority                 = each.value.priority
   enabled                  = each.value.enabled
 
-  external_address         = each.value.external_address != "" ? each.value.external_address : local.public_ips[each.value.external_address_target].ip_address
+  #external_address         = each.value.external_address != "" ? each.value.external_address : local.public_ips[each.value.external_address_target].ip_address
+  external_address         = each.value.external_address != "" ? each.value.external_address : vcd_ip_space_ip_allocation.public_floating_ip[each.value.external_address_target].ip_address
   internal_address         = each.value.internal_address != "" ? each.value.internal_address : "${cidrhost("${vcd_network_routed_v2.routed_network[each.value.internal_address_target].gateway}/${vcd_network_routed_v2.routed_network[each.value.internal_address_target].prefix_length}", 0)}/${vcd_network_routed_v2.routed_network[each.value.internal_address_target].prefix_length}"
 
   snat_destination_address = each.value.snat_destination_address
 
   logging                  = each.value.logging
 }
+
 
 # Note. Use this for DNAT rules. 
 
@@ -348,7 +371,8 @@ resource "vcd_nsxt_nat_rule" "dnat_rules" {
   priority                 = each.value.priority
   enabled                  = each.value.enabled
 
-  external_address         = each.value.external_address != "" ? each.value.external_address : local.public_ips[each.value.external_address_target].ip_address
+  #external_address         = each.value.external_address != "" ? each.value.external_address : local.public_ips[each.value.external_address_target].ip_address
+  external_address         = each.value.external_address != "" ? each.value.external_address : vcd_ip_space_ip_allocation.public_floating_ip[each.value.external_address_target].ip_address
   internal_address         = each.value.internal_address != "" ? each.value.internal_address : [for k, v in vcd_vm.virtual_machines[each.value.internal_address_target].network : v.ip if v.is_primary == true ][0]
 
   dnat_external_port       = each.value.dnat_external_port
@@ -356,6 +380,7 @@ resource "vcd_nsxt_nat_rule" "dnat_rules" {
 
   logging                  = each.value.logging
 }
+
 
 # Note. Use this for NO_SNAT rules. 
 
@@ -400,14 +425,15 @@ resource "vcd_nsxt_nat_rule" "no_dnat_rules" {
   priority                 = each.value.priority
   enabled                  = each.value.enabled
 
-  external_address         = each.value.external_address != "" ? each.value.external_address : local.public_ips[each.value.external_address_target].ip_address
+  #external_address         = each.value.external_address != "" ? each.value.external_address : local.public_ips[each.value.external_address_target].ip_address
+  external_address         = each.value.external_address != "" ? each.value.external_address : vcd_ip_space_ip_allocation.public_floating_ip[each.value.external_address_target].ip_address
 
   dnat_external_port       = each.value.dnat_external_port
 
   logging                  = each.value.logging
 }
 
-
+#/*
 
 # This code block creates an output structure.
 
@@ -464,7 +490,7 @@ locals {
     local.created_no_dnat_rules,) 
 }
 
-
+#*/
 
 ################################################################################
 # This code block creates security groups
@@ -508,12 +534,14 @@ locals {
 
 locals {
   ip_sets = { for k,v in var.ip_sets : k => {
-    ip_addresses = v.ip_addresses == [] ? [ for addrtarget_k,addrtarget_v in local.public_ips : addrtarget_v.ip_address if addrtarget_k == v.address_target ] : v.ip_addresses
+    ip_addresses = v.ip_addresses == [] ? [ for addrtarget_k,addrtarget_v in vcd_ip_space_ip_allocation.public_floating_ip : addrtarget_v.ip_address if addrtarget_k == v.address_target ] : v.ip_addresses
     description = v.description
     }
   }
 }
 
+
+#/*
 
 resource "vcd_nsxt_ip_set" "ip_set" {
   for_each                 = local.ip_sets
@@ -532,6 +560,8 @@ resource "vcd_nsxt_ip_set" "ip_set" {
 locals {
   created_ip_sets = local.ip_sets
 }
+
+#*/
 
 ################################################################################
 # This code block collects required Application Port Profile IDs 
