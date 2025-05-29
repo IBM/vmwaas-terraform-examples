@@ -13,6 +13,7 @@ variable "vmwaas_password" {
 variable "vmwaas_api_token" {
   description = "vCloud Director API Token for user."
   default = ""
+
 }
 
 variable "vmwaas_org" {
@@ -148,7 +149,7 @@ variable "virtual_machines" {
     app-server-1 = {
       image = {
         catalog_name  = "Public Catalog"
-        template_name = "RedHat-8-Template-Official"
+        template_name = "RHEL-8-Template-Official"
       }
       memory          = 8192
       cpus            = 2
@@ -187,7 +188,7 @@ variable "virtual_machines" {
     app-server-2 = {
       image = {
         catalog_name  = "Public Catalog"
-        template_name = "RedHat-8-Template-Official"
+        template_name = "RHEL-8-Template-Official"
       }
       memory        = 8192
       cpus          = 2
@@ -217,7 +218,7 @@ variable "virtual_machines" {
     db-server-1 = {
       image = {
         catalog_name  = "Public Catalog"
-        template_name = "RedHat-8-Template-Official"
+        template_name = "RHEL-8-Template-Official"
       }
       memory        = 8192
       cpus          = 2
@@ -237,7 +238,7 @@ variable "virtual_machines" {
     jump-server-1 = {
       image = {
         catalog_name  = "Public Catalog"
-        template_name = "Windows-2022-Template-Official"
+        template_name = "Windows-22-Template-Official"
       }
       memory        = 8192
       cpus          = 2
@@ -512,5 +513,6 @@ variable "firewall_rules" {
 
 variable "public_ip_space_name" {
   description = "Public IP space name."
+  default = ""
 }
 
